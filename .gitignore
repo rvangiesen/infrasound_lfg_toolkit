@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+
+# Large files & Executables & Logs
+*.exe
+*.wbk
+*.zip
+logs/
+logs_test/
+Nieuwe map/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
