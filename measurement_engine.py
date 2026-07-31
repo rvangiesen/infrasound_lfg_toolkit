@@ -37,6 +37,12 @@ class SharedState:
         self.baro_pressure_raw = np.array([])
         self.baro_pressure_filtered = np.array([])
         
+        # Waterfall spectrum history for InfraView Waterfall Plotter
+        self.baro_waterfall_times = []
+        self.baro_waterfall_matrix = []
+        self.mic_waterfall_times = []
+        self.mic_waterfall_matrix = []
+        
         # Detected tones list (freq, dbz, audibility, penalty)
         self.detected_tones = []
         
@@ -335,6 +341,14 @@ class MeasurementEngine:
             self.state.mic_peak_freq = peak_freq
             self.state.mic_peak_dbz = peak_dbz
             self.state.detected_tones = detected_tones
+            
+            # Waterfall history for InfraView
+            now_str = time.strftime("%H:%M:%S")
+            self.state.mic_waterfall_times.append(now_str)
+            self.state.mic_waterfall_matrix.append(dbz_spectrum[disp_indices].tolist())
+            if len(self.state.mic_waterfall_times) > 40:
+                self.state.mic_waterfall_times.pop(0)
+                self.state.mic_waterfall_matrix.pop(0)
 
     def _run_barometer(self):
         """Background thread for processing Dracal Microbarometer (3 - 20 Hz)."""
@@ -576,6 +590,14 @@ class MeasurementEngine:
             self.state.baro_time = time_data[-100:]
             self.state.baro_pressure_raw = raw_data[-100:]
             self.state.baro_pressure_filtered = filtered_data[-100:]
+            
+            # Waterfall history for InfraView
+            now_str = time.strftime("%H:%M:%S")
+            self.state.baro_waterfall_times.append(now_str)
+            self.state.baro_waterfall_matrix.append(dbz_spectrum[disp_indices].tolist())
+            if len(self.state.baro_waterfall_times) > 40:
+                self.state.baro_waterfall_times.pop(0)
+                self.state.baro_waterfall_matrix.pop(0)
 
     def _analyze_tonality(self, freqs, db_vals, start_f, end_f):
         """

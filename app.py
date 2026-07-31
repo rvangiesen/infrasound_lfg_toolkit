@@ -6,6 +6,7 @@ from plotly.subplots import make_subplots
 import time
 import os
 import sys
+import subprocess
 
 # Ensure the app directory is in the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -146,7 +147,22 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Global/Cached Measurement Engine (Shared across all browser tabs/sessions)
+# Helper function to locate external InfraView / Dracal executables
+def find_infraview_exe():
+    candidates = [
+        r"C:\Program Files\Dracal\DracalView.exe",
+        r"C:\Program Files (x86)\Dracal\DracalView.exe",
+        r"C:\Program Files\Dracal\Cmd\dracal-usb-get.exe",
+        r"C:\Program Files (x86)\Dracal\Cmd\dracal-usb-get.exe",
+        r"C:\Program Files\IrfanView\i_view64.exe",
+        r"C:\Program Files (x86)\IrfanView\i_view32.exe"
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
+# Initialize Global/Cached Measurement Engine
 @st.cache_resource
 def get_measurement_engine():
     shared_state = SharedState()
@@ -190,7 +206,6 @@ try:
         if dev['max_input_channels'] > 0:
             input_devices.append(f"#{idx}: {dev['name']} ({dev['hostapi']})")
     
-    # Try to find Realtek input as default
     default_dev_idx = 0
     for idx, d_str in enumerate(input_devices):
         if "Realtek" in d_str and "Input" in d_str:
@@ -213,7 +228,6 @@ audio_cal_filepath = ""
 if cal_file_option == "Bestand Selecteren":
     uploaded_cal = st.sidebar.file_uploader("Upload Kalibratiebestand", type=["cal", "txt", "dat"])
     if uploaded_cal is not None:
-        # Save temp file
         temp_dir = "./temp_cal"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, uploaded_cal.name)
@@ -242,6 +256,43 @@ dracal_channel = st.sidebar.number_input("Dracal Uitleeskanaal", min_value=0, ma
 st.sidebar.markdown("### 💾 Data Opslag")
 log_dir = st.sidebar.text_input("Map voor CSV logs", value="./logs")
 log_interval = st.sidebar.number_input("Log Interval (seconden)", min_value=5, max_value=3600, value=60)
+
+# --- INFRAVIEW & EXTERNAL TOOLS SIDEBAR ---
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🔍 InfraView & Software Launchers")
+infra_exe = find_infraview_exe()
+if infra_exe:
+    st.sidebar.success(f"Detectie: {os.path.basename(infra_exe)}")
+    if st.sidebar.button("🚀 Start External InfraView / DracalView", use_container_width=True):
+        try:
+            subprocess.Popen([infra_exe])
+            st.sidebar.info("InfraView / DracalView gestart!")
+        except Exception as e:
+            st.sidebar.error(f"Fout bij starten: {e}")
+else:
+    st.sidebar.warning("DracalView / InfraView executable niet gedetecteerd.")
+    if st.sidebar.button("📦 Installeer Dracal & InfraView Tools", use_container_width=True):
+        inst_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "DracalUtilities-3.7.0.exe")
+        if os.path.exists(inst_path):
+            try:
+                subprocess.Popen([inst_path])
+                st.sidebar.info("Installer gestart! Volg de stappen op het scherm van uw laptop.")
+            except Exception as e:
+                st.sidebar.error(f"Fout: {e}")
+        else:
+            st.sidebar.error("DracalUtilities-3.7.0.exe niet gevonden.")
+
+# Laptop Auto-Setup Expander
+with st.sidebar.expander("🛠️ Laptop Setup & System Check"):
+    st.markdown("Automated setup tool voor volledige installatie van Python packages & launchers op uw laptop:")
+    if st.button("⚡ Run Full Laptop Setup Script", use_container_width=True):
+        setup_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "setup_laptop.py")
+        try:
+            res = subprocess.run([sys.executable, setup_script], capture_output=True, text=True)
+            st.success("Setup script voltooid!")
+            st.text_area("Setup Log Output", res.stdout, height=150)
+        except Exception as e:
+            st.error(f"Fout bij uitvoeren setup: {e}")
 
 # Process buttons
 if start_btn:
@@ -370,7 +421,13 @@ with cols_metrics[3]:
     """, unsafe_allow_html=True)
 
 # 3. Main Dashboard Tabs
-tabs = st.tabs(["📊 Live Spectrogrammen", "📈 Drukgolven (Tijddomein)", "🎯 Tonaliteit (IEC 61400-11)", "📂 Historie & Logs"])
+tabs = st.tabs([
+    "📊 Live Spectrogrammen", 
+    "🔍 InfraView Inspector & Waterfall", 
+    "📈 Drukgolven (Tijddomein)", 
+    "🎯 Tonaliteit (IEC 61400-11)", 
+    "📂 Historie & Logs"
+])
 
 # Tab 1: Live Spectrograms
 with tabs[0]:
@@ -380,10 +437,8 @@ with tabs[0]:
         st.subheader("Infrasound Frequentiespectrum (3 - 20 Hz)")
         st.markdown("*Gemeten met de Dracal microbarometer*")
         
-        # Prepare plot
         fig_baro = go.Figure()
         
-        # Get data
         freqs_baro = np.array([])
         dbz_baro = np.array([])
         with state.lock:
@@ -399,7 +454,6 @@ with tabs[0]:
                 name='dBZ (Lineair)'
             ))
             
-            # Highlight peak
             peak_f = 0.0
             peak_db = -100.0
             with state.lock:
@@ -435,7 +489,6 @@ with tabs[0]:
         
         fig_mic = go.Figure()
         
-        # Get data
         freqs_mic = np.array([])
         dbz_mic = np.array([])
         dba_mic = np.array([])
@@ -445,7 +498,6 @@ with tabs[0]:
             dba_mic = state.mic_dba_spectrum.copy()
             
         if len(freqs_mic) > 0 and len(dbz_mic) > 0:
-            # We filter data between 10 Hz and 250 Hz for display
             disp_idx = np.where((freqs_mic >= 10.0) & (freqs_mic <= 250.0))[0]
             if len(disp_idx) > 0:
                 fig_mic.add_trace(go.Scatter(
@@ -463,7 +515,6 @@ with tabs[0]:
                     name='dBA (A-gewogen)'
                 ))
                 
-                # Highlight peak
                 pf = 0.0
                 pdb = -100.0
                 with state.lock:
@@ -493,14 +544,109 @@ with tabs[0]:
         )
         st.plotly_chart(fig_mic, use_container_width=True, theme=None, key="mic_spec_chart")
 
-# Tab 2: Waveform Oscilloscope
+# Tab 2: InfraView Inspector & Waterfall Plotter
 with tabs[1]:
+    st.subheader("🔍 InfraView Waterfall Spectrogram & Multi-dimensional Analysis")
+    st.markdown("Geavanceerde waterval-visualisatie (Tijd x Frequentie x dBZ) voor het opsporen van constante tonen en temporele variaties.")
+    
+    # Action Bar for External InfraView
+    col_infra1, col_infra2 = st.columns([3, 1])
+    with col_infra1:
+        st.info("💡 **InfraView Integratie:** U kunt dit in-app 3D waterfall-systeem gebruiken óf met 1-klik de externe DracalView/InfraView applicatie starten.")
+    with col_infra2:
+        if infra_exe:
+            if st.button("🚀 Open External InfraView", type="primary", use_container_width=True):
+                try:
+                    subprocess.Popen([infra_exe])
+                    st.success("InfraView gestart!")
+                except Exception as e:
+                    st.error(f"Fout: {e}")
+        else:
+            if st.button("📦 Installeer InfraView Software", use_container_width=True):
+                inst_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "DracalUtilities-3.7.0.exe")
+                if os.path.exists(inst_path):
+                    subprocess.Popen([inst_path])
+                    st.info("Installer gestart!")
+
+    st.markdown("---")
+    
+    # Controls for Waterfall
+    col_w_ctrl1, col_w_ctrl2, col_w_ctrl3 = st.columns(3)
+    with col_w_ctrl1:
+        wf_channel = st.selectbox("Selecteer Signaalkanaal", ["Dracal Microbarometer (3 - 20 Hz Infrasound)", "Dayton iMM-6 Microfoon (10 - 250 Hz LFG)"])
+    with col_w_ctrl2:
+        wf_render_mode = st.selectbox("Visualisatietype", ["2D Heatmap Spectrogram", "3D Surface Waterfall"])
+    with col_w_ctrl3:
+        colorscale_choice = st.selectbox("Kleurenpalet (Colorscale)", ["Viridis", "Plasma", "Inferno", "Turbo", "Thermal"])
+
+    # Prepare data for Waterfall
+    wf_times = []
+    wf_matrix = []
+    wf_freqs = []
+    
+    with state.lock:
+        if "Dracal" in wf_channel:
+            wf_times = list(state.baro_waterfall_times)
+            wf_matrix = list(state.baro_waterfall_matrix)
+            wf_freqs = list(state.baro_freqs)
+        else:
+            wf_times = list(state.mic_waterfall_times)
+            wf_matrix = list(state.mic_waterfall_matrix)
+            wf_freqs = list(state.mic_freqs)
+
+    if len(wf_matrix) > 0 and len(wf_freqs) > 0:
+        z_data = np.array(wf_matrix)
+        
+        if wf_render_mode == "2D Heatmap Spectrogram":
+            fig_wf = go.Figure(data=go.Heatmap(
+                z=z_data,
+                x=wf_freqs,
+                y=wf_times,
+                colorscale=colorscale_choice.lower(),
+                colorbar=dict(title="dBZ Niveau")
+            ))
+            fig_wf.update_layout(
+                template="plotly_dark",
+                font=dict(color='#c9d1d9'),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                margin=dict(l=50, r=20, t=10, b=50),
+                xaxis=dict(title="Frequentie (Hz)", showgrid=True, gridcolor='#30363d'),
+                yaxis=dict(title="Tijdstempel (Verstreken)", showgrid=True, gridcolor='#30363d'),
+                height=500
+            )
+        else:
+            fig_wf = go.Figure(data=[go.Surface(
+                z=z_data,
+                x=wf_freqs,
+                y=np.arange(len(wf_times)),
+                colorscale=colorscale_choice.lower()
+            )])
+            fig_wf.update_layout(
+                template="plotly_dark",
+                font=dict(color='#c9d1d9'),
+                paper_bgcolor='rgba(0,0,0,0)',
+                margin=dict(l=10, r=10, t=10, b=10),
+                scene=dict(
+                    xaxis_title='Frequentie (Hz)',
+                    yaxis_title='Tijd (Samples)',
+                    zaxis_title='Geluidsniveau (dBZ)',
+                    camera=dict(eye=dict(x=1.5, y=-1.5, z=1.2))
+                ),
+                height=550
+            )
+            
+        st.plotly_chart(fig_wf, use_container_width=True, theme=None, key="infraview_wf_chart")
+    else:
+        st.info("💡 Start de meting via het zijpaneel om live data op te bouwen in de InfraView waterfall-spectrogram.")
+
+# Tab 3: Waveform Oscilloscope
+with tabs[2]:
     st.subheader("Micro-drukschommelingen in Infrasoundgebied (Tijddomein)")
     st.markdown("Vergelijking tussen de ruwe atmosferische druk (incl. DC-offset) en de gefilterde luchtdrukgolf (AC-coupled, filter > 0.5 Hz)")
     
     col_w1, col_w2 = st.columns(2)
     
-    # Get time data
     t_baro = np.array([])
     p_raw = np.array([])
     p_filt = np.array([])
@@ -559,8 +705,8 @@ with tabs[1]:
             fig_w_filt.add_annotation(text="Start meting om data te tonen", showarrow=False, font=dict(color="#8b949e"))
         st.plotly_chart(fig_w_filt, use_container_width=True, theme=None, key="filt_wave_chart")
 
-# Tab 3: Tonality Analysis (IEC 61400-11)
-with tabs[2]:
+# Tab 4: Tonality Analysis (IEC 61400-11)
+with tabs[3]:
     st.subheader("Smalbandige Tonaliteitsanalyse conform IEC 61400-11")
     st.markdown("""
     De IEC 61400-11 richtlijn beoordeelt tonale componenten op basis van de **kritieke bandbreedte** rond een piek.
@@ -568,13 +714,11 @@ with tabs[2]:
     - Als de hoorbaarheid **$\Delta L_{ta} \ge 10$ dB**, geldt de maximale toeslag van **6 dB** op de totale geluidsbelasting.
     """)
     
-    # Get tones
     tones_list = []
     with state.lock:
         tones_list = state.detected_tones.copy()
         
     if len(tones_list) > 0:
-        # Display alerts if prominent tones exist
         prominent_tones = [t for t in tones_list if t["audibility"] >= 4.0]
         if len(prominent_tones) > 0:
             for pt in prominent_tones:
@@ -582,19 +726,16 @@ with tabs[2]:
         else:
             st.success("✅ Geen prominente tonale componenten gedetecteerd (alle gedetecteerde pieken hebben $\Delta L_{ta} < 4$ dB).")
             
-        # Display Table
         df_tones = pd.DataFrame(tones_list)
         df_tones.columns = ["Frequentie (Hz)", "Toonniveau (dBZ)", "Hoorbaarheid Delta L_ta (dB)", "Toeslag / Penalty (dB)"]
-        
-        # Round values for display
         df_tones = df_tones.round(2)
         
         st.dataframe(df_tones, use_container_width=True, hide_index=True)
     else:
         st.info("Start meting en zorg dat de Dayton microfoon live data ontvangt om de tonaliteitsanalyse uit te voeren.")
 
-# Tab 4: History & Logs
-with tabs[3]:
+# Tab 5: History & Logs
+with tabs[4]:
     st.subheader("Historische logs en CSV Export")
     
     filepath = ""
@@ -604,7 +745,6 @@ with tabs[3]:
     if filepath and os.path.exists(filepath):
         st.markdown(f"**Actief logbestand:** `{os.path.basename(filepath)}`")
         
-        # Download button
         with open(filepath, 'r') as f:
             csv_data = f.read()
         st.download_button(
@@ -614,7 +754,6 @@ with tabs[3]:
             mime='text/csv'
         )
         
-        # Load and show dataframe
         try:
             df_log = pd.read_csv(filepath)
             
@@ -622,7 +761,6 @@ with tabs[3]:
                 st.markdown("### Laatste metingen (tabel)")
                 st.dataframe(df_log.tail(15), use_container_width=True)
                 
-                # Plot historical trend
                 st.markdown("### Verloop over de tijd")
                 fig_hist = go.Figure()
                 
@@ -669,12 +807,10 @@ with tabs[3]:
         st.info("Logbestanden verschijnen hier zodra de meting is gestart en de eerste logging-minuut is verstreken.")
 
 # --- AUTO-REFRESH SCRIPT LOOP ---
-# When the engine is active, refresh the page at regular intervals to get live charts
 is_running_now = False
 with state.lock:
     is_running_now = state.is_running
     
 if is_running_now:
-    # Refresh rate: 300 ms for smooth real-time spectrum rendering
     time.sleep(0.3)
     st.rerun()

@@ -105,3 +105,19 @@ Als omwonende staat u vaak 1-0 achter tegenover professionele meetbureaus die do
 
 ### Argument 3: *"De windturbine draaide tijdens onze controlemeting conform de voorschriften."*
 *   **Uw weerwoord:** "Akoestische meetbureaus testen windturbines bij voorkeur tijdens 'vollast' overdag om een stabiel beeld te krijgen. De meeste hinder voor omwonenden treedt echter op bij stabiele nachtelijke atmosferische omstandigheden (waarbij de windsnelheid op ashoogte hoog is, maar het windgeruis op de grond laag is). Vergelijk uw logbestanden (CSV) met de openbare windgegevens (KNMI) en de operationele data van de turbine (indien opvraagbaar) om aan te tonen dat de hinder optreedt onder specifieke atmosferische condities die door het meetbureau niet zijn onderzocht."
+
+---
+
+## 4. Laptop Setup & InfraView Waterfall Systeem
+
+### A. 100% Automatische Laptop Overname
+Indien u dit project overneemt op uw laptop via AntiGravity of Git:
+1. Dubbelklik in de projectmap op `start_app.bat`.
+2. Het systeem installeert automatisch alle vereiste Python bibliotheken en start de applicatie op uw laptop.
+3. U kunt ook via de GUI in de zijbalk onder **`🛠️ Laptop Setup & System Check`** op **`⚡ Run Full Laptop Setup Script`** klikken.
+
+### B. InfraView Spectrogram & External Launcher
+In het tabblad **`🔍 InfraView Inspector & Waterfall`**:
+- **3D & 2D Waterval:** Bekijk de temporele ontwikkeling van frequenties en geluidsdrukniveaus.
+- **1-Klik External Software Launch:** Met de knop **`🚀 Open External InfraView`** opent u direct de losse DracalView/InfraView software.
+- **Automatische Software Installatie:** Indien de Dracal software nog niet geïnstalleerd is op de laptop, gebruikt u de knop **`📦 Installeer InfraView Software`** om `DracalUtilities-3.7.0.exe` direct uit te voeren.
