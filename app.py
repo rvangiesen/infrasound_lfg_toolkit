@@ -2744,57 +2744,57 @@ with tabs[5]:
             <p>Onderstaande bijlage bevat de afgedrukte grafische analysecomponenten (Grafieken 2.0 t/m 11.0) met ingetekende assen, gemeten waarden, InfraView watervallen en normatieve referentiecurven (2 grafieken per pagina).</p>
             
             <!-- PAGE 1 OF APPENDIX (2 GRAPHS) -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz, Microbarometer)</p>
-                <img src="data:image/png;base64,{b64_2}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz, Microbarometer)</p>
+                <img src="data:image/png;base64,{b64_2}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 3.0: Laagfrequent Frequentiespectrum (10 - 250 Hz, Dayton Microfoon)</p>
-                <img src="data:image/png;base64,{b64_3}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 3.0: Laagfrequent Frequentiespectrum (10 - 250 Hz, Dayton Microfoon)</p>
+                <img src="data:image/png;base64,{b64_3}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
 
             <!-- PAGE 2 OF APPENDIX (2 GRAPHS) -->
             <div style="page-break-before: always; margin-top: 30px;"></div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 4.0: Smalbandige FFT Spectrum & Tonaliteitsanalyse (IEC 61400-11)</p>
-                <img src="data:image/png;base64,{b64_4}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 4.0: Smalbandige FFT Spectrum & Tonaliteitsanalyse (IEC 61400-11)</p>
+                <img src="data:image/png;base64,{b64_4}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 5.0: Infrasound Drukgolf Tijddomein Oscillogram</p>
-                <img src="data:image/png;base64,{b64_5}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 5.0: Infrasound Drukgolf Tijddomein Oscillogram</p>
+                <img src="data:image/png;base64,{b64_5}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
 
             <!-- PAGE 3 OF APPENDIX (2 GRAPHS) -->
             <div style="page-break-before: always; margin-top: 30px;"></div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer)</p>
-                <img src="data:image/png;base64,{b64_6}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer)</p>
+                <img src="data:image/png;base64,{b64_6}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 7.0: Gecorrigeerde Turbine-immissie (Energetische Subtractie Lcorr)</p>
-                <img src="data:image/png;base64,{b64_7}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 7.0: Gecorrigeerde Turbine-immissie (Energetische Subtractie Lcorr)</p>
+                <img src="data:image/png;base64,{b64_7}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
 
             <!-- PAGE 4 OF APPENDIX (2 GRAPHS) -->
             <div style="page-break-before: always; margin-top: 30px;"></div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 8.0: Meteorologisch & Tijdsverloop Trendgrafiek</p>
-                <img src="data:image/png;base64,{b64_8}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 8.0: Meteorologisch & Tijdsverloop Trendgrafiek</p>
+                <img src="data:image/png;base64,{b64_8}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 9.0: InfraView Waterval Spectrogrammen (Dracal & Dayton Sensoren)</p>
-                <img src="data:image/png;base64,{b64_9}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 9.0: InfraView Waterval Spectrogrammen (Dracal & Dayton Sensoren)</p>
+                <img src="data:image/png;base64,{b64_9}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
 
             <!-- PAGE 5 OF APPENDIX (2 GRAPHS) -->
             <div style="page-break-before: always; margin-top: 30px;"></div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 10.0: Breedspectrum Ware Hinder & Energetische Subtractie (3 - 2000 Hz) [dB(Z)]</p>
-                <img src="data:image/png;base64,{b64_10}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 10.0: Breedspectrum Ware Hinder & Energetische Subtractie (3 - 2000 Hz) [dB(Z)]</p>
+                <img src="data:image/png;base64,{b64_10}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 4px;">Grafiek 11.0: Breedspectrum Spectrum met Verticale Scheiding (3 - 2000 Hz) [dB(Z) ➔ dB(A)]</p>
-                <img src="data:image/png;base64,{b64_11}" style="width: 95%; max-width: 720px; border: 1px solid #002060; border-radius: 4px;" />
+            <div style="text-align: center; margin-bottom: 25px;">
+                <p style="font-size: 13px; font-weight: bold; color: #002060; margin-bottom: 6px;">Grafiek 11.0: Breedspectrum Spectrum met Verticale Scheiding (3 - 2000 Hz) [dB(Z) ➔ dB(A)]</p>
+                <img src="data:image/png;base64,{b64_11}" style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border: 1px solid #002060; border-radius: 4px;" />
             </div>
 
             <h4 style="color: #002060; margin-top: 20px;">Spectrale & Numerieke Samenvatting</h4>
@@ -2820,11 +2820,12 @@ with tabs[5]:
         official_report_html = official_report_html.replace("</body>", f"{appendix_html}\n</body>")
 
     # Generate Word (.docx) binary streams (Black & Dark Blue styling)
-    stab_docx_bytes = drg.build_stab_report_docx(report_data_dict)
-    indoor_docx_bytes = drg.build_indoor_report_docx(report_data_dict)
-    outdoor_docx_bytes = drg.build_outdoor_report_docx(report_data_dict)
-    ref_docx_bytes = drg.build_ref_report_docx(report_data_dict)
-    official_docx_bytes = drg.build_official_report_docx(report_data_dict)
+    charts = drg.generate_report_charts_dict(report_data_dict) if 'charts' not in locals() else charts
+    stab_docx_bytes = drg.build_stab_report_docx(report_data_dict, charts=charts)
+    indoor_docx_bytes = drg.build_indoor_report_docx(report_data_dict, charts=charts)
+    outdoor_docx_bytes = drg.build_outdoor_report_docx(report_data_dict, charts=charts)
+    ref_docx_bytes = drg.build_ref_report_docx(report_data_dict, charts=charts)
+    official_docx_bytes = drg.build_official_report_docx(report_data_dict, charts=charts)
 
     # Determine HTML content for active preview
     if "STAB" in selected_report_type:
@@ -2845,7 +2846,7 @@ with tabs[5]:
 
     # Display Active Preview
     st.markdown(f"### 👁️ {preview_title}")
-    st.components.v1.html(active_html, height=700, scrolling=True)
+    st.components.v1.html(active_html, height=950, scrolling=True)
 
     # Action Buttons for Downloading All Report Types & CSV Envelope
     st.markdown("### 📥 Export & Certificering Downloads")

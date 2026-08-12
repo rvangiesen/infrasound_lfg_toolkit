@@ -301,6 +301,7 @@ def add_footer_note(doc, note_text):
 
 def _make_fallback_chart(title, err_msg=""):
     import matplotlib.pyplot as plt
+    plt.close('all')
     fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
     ax.text(0.5, 0.5, f"{title}\n\n[Meetdata Geanalyseerd & Validatie Conform]", 
             horizontalalignment='center', verticalalignment='center', 
@@ -311,6 +312,7 @@ def _make_fallback_chart(title, err_msg=""):
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     plt.close(fig)
+    plt.close('all')
     buf.seek(0)
     return buf.getvalue()
 
@@ -322,6 +324,7 @@ def generate_report_charts_dict(data):
     matplotlib.rcParams['mathtext.fontset'] = 'dejavusans'
     import matplotlib.pyplot as plt
     import matplotlib.ticker as ticker
+    plt.close('all')
 
     baro_dbz = data.get("baro_dbz") if (data.get("baro_dbz") is not None and data.get("baro_dbz") > 0) else 65.0
     baro_pf = data.get("baro_pf") if (data.get("baro_pf") is not None and data.get("baro_pf") > 0) else 1.25
@@ -830,7 +833,7 @@ def add_graphical_appendix(doc, data, charts=None):
 # ================= =========================================================
 # REPORT BUILDER 1: STAB CONTRA-EXPERTISE RAPPORT (.DOCX)
 # ===========================================================================
-def build_stab_report_docx(data):
+def build_stab_report_docx(data, charts=None):
     doc = Document()
     add_header_banner(doc, "OFFICIEEL AKOESTISCH CONTRA-EXPERTISE RAPPORT", "STAB & Raad van State Bestendige Toetsing Infrasound & Laagfrequent Geluid")
     
@@ -914,7 +917,7 @@ def build_stab_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), c_info)
     
-    add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data, charts=charts)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel STAB Contra-Expertise Rapport v2.5 | Datalog CSV: {csv_name}")
@@ -927,7 +930,7 @@ def build_stab_report_docx(data):
 # ================= =========================================================
 # REPORT BUILDER 2: BINNENSHUIS MEETRAPPORT (.DOCX)
 # ===========================================================================
-def build_indoor_report_docx(data):
+def build_indoor_report_docx(data, charts=None):
     doc = Document()
     add_header_banner(doc, "OFFICIEEL BINNENSHUIS MEETRAPPORT", "NSG Richtlijn Laagfrequent Geluid & NEN-EN-ISO 16032 Binnenmeting")
     
@@ -1027,7 +1030,7 @@ def build_indoor_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data, charts=charts)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Binnenshuis Meetrapport v2.5 | Datalog CSV: {csv_name}")
@@ -1040,7 +1043,7 @@ def build_indoor_report_docx(data):
 # ================= =========================================================
 # REPORT BUILDER 3: BUITENSHUIS GEVEL MEETRAPPORT (.DOCX)
 # ===========================================================================
-def build_outdoor_report_docx(data):
+def build_outdoor_report_docx(data, charts=None):
     doc = Document()
     add_header_banner(doc, "OFFICIEEL BUITENSHUIS (GEVEL) MEETRAPPORT", "Vrijveld- & Gevelmeting conform Handleiding Industrielawaai 1999")
     
@@ -1091,7 +1094,7 @@ def build_outdoor_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data, charts=charts)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Buitenshuis Meetrapport v2.5 | Datalog CSV: {csv_name}")
@@ -1104,7 +1107,7 @@ def build_outdoor_report_docx(data):
 # ================= =========================================================
 # REPORT BUILDER 4: REFERENTIEMETING WINDTURBINE RAPPORT (.DOCX)
 # ===========================================================================
-def build_ref_report_docx(data):
+def build_ref_report_docx(data, charts=None):
     doc = Document()
     add_header_banner(doc, "OFFICIEEL REFERENTIE-MEETRAPPORT WINDTURBINE", "Nulmeting, Bronkarakterisering & Immissie Referentie (IEC 61400-11)")
     
@@ -1163,7 +1166,7 @@ def build_ref_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data, charts=charts)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Referentie-Meetrapport Windturbine v2.5 | Datalog CSV: {csv_name}")
@@ -1176,7 +1179,7 @@ def build_ref_report_docx(data):
 # ================= =========================================================
 # REPORT BUILDER 5: OFFICIEEL STANDAARD MEETRAPPORT (.DOCX)
 # ===========================================================================
-def build_official_report_docx(data):
+def build_official_report_docx(data, charts=None):
     doc = Document()
     add_header_banner(doc, "OFFICIEEL AKOESTISCH MEETRAPPORT", "Geluids- & Infrasoundmeting conform Handleiding Industrielawaai & RMV Windturbines")
     
@@ -1234,7 +1237,7 @@ def build_official_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), c_info)
     
-    add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data, charts=charts)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Akoestisch Meetrapport v2.5 | Datalog CSV: {csv_name}")
