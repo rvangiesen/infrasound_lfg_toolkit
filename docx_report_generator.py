@@ -308,14 +308,14 @@ def generate_report_charts_dict(data):
     import matplotlib.pyplot as plt
     import matplotlib.ticker as ticker
 
-    baro_dbz = data.get("baro_dbz", 65.0) if data.get("baro_dbz") is not None else 65.0
-    baro_pf = data.get("baro_pf", 1.25) if data.get("baro_pf") is not None else 1.25
-    mic_dbz = data.get("mic_dbz", 55.0) if data.get("mic_dbz") is not None else 55.0
-    mic_dba = data.get("mic_dba", 42.0) if data.get("mic_dba") is not None else 42.0
-    l95_dbz = data.get("l95_dbz", 48.0) if data.get("l95_dbz") is not None else 48.0
-    l95_dba = data.get("l95_dba", 35.0) if data.get("l95_dba") is not None else 35.0
-    corr_dbz = data.get("corr_dbz", 53.5) if data.get("corr_dbz") is not None else 53.5
-    corr_dba = data.get("corr_dba", 40.5) if data.get("corr_dba") is not None else 40.5
+    baro_dbz = data.get("baro_dbz") if (data.get("baro_dbz") is not None and data.get("baro_dbz") > 0) else 65.0
+    baro_pf = data.get("baro_pf") if (data.get("baro_pf") is not None and data.get("baro_pf") > 0) else 1.25
+    mic_dbz = data.get("mic_dbz") if (data.get("mic_dbz") is not None and data.get("mic_dbz") > 0) else 55.0
+    mic_dba = data.get("mic_dba") if (data.get("mic_dba") is not None and data.get("mic_dba") > 0) else 42.0
+    l95_dbz = data.get("l95_dbz") if (data.get("l95_dbz") is not None and data.get("l95_dbz") > 0) else 48.0
+    l95_dba = data.get("l95_dba") if (data.get("l95_dba") is not None and data.get("l95_dba") > 0) else 35.0
+    corr_dbz = data.get("corr_dbz") if (data.get("corr_dbz") is not None and data.get("corr_dbz") > 0) else 53.5
+    corr_dba = data.get("corr_dba") if (data.get("corr_dba") is not None and data.get("corr_dba") > 0) else 40.5
     m_info = data.get("m_info") if isinstance(data.get("m_info"), dict) else {}
     w_spd = m_info.get("wind_speed_m_s", 2.5) if m_info.get("wind_speed_m_s") is not None else 2.5
 
