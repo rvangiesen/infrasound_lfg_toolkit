@@ -303,7 +303,10 @@ def generate_report_charts_dict(data):
     """Generate high-resolution PNG image streams for Grafieken 2.0 t/m 11.0 with clear axes, labels, norm curves, and waterfall spectrograms."""
     import matplotlib
     matplotlib.use('Agg')
+    matplotlib.rcParams['text.usetex'] = False
+    matplotlib.rcParams['mathtext.fontset'] = 'dejavusans'
     import matplotlib.pyplot as plt
+    import matplotlib.ticker as ticker
 
     baro_dbz = data.get("baro_dbz", 65.0) if data.get("baro_dbz") is not None else 65.0
     baro_pf = data.get("baro_pf", 1.25) if data.get("baro_pf") is not None else 1.25
@@ -361,6 +364,7 @@ def generate_report_charts_dict(data):
     ax.semilogx(freqs_3, spec_3_a, color='#28a745', linewidth=2.0, label=f'A-gewogen dB(A) ({mic_dba:.1f} dBA)')
     ax.semilogx(nsg_freqs, nsg_thresh, color='#d9534f', linestyle='--', linewidth=1.6, marker='o', markersize=4, label='NSG LFG Drempelcurve (Woningen)')
 
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
     ax.set_title('Grafiek 3.0: Laagfrequent Spectrum (10 - 250 Hz) [dB(Z) & dB(A)]', fontsize=9.0, fontweight='bold', color='#002060')
     ax.set_xlabel('Frequentie (Hz, Logaritmisch)', fontsize=8, fontweight='bold')
     ax.set_ylabel('Geluidsniveau [dB(Z) & dB(A)]', fontsize=8, fontweight='bold')
@@ -508,6 +512,7 @@ def generate_report_charts_dict(data):
     Z2 = mic_dbz - 7 * np.log10(F2 / 10.0) + 1.5 * np.sin(F2 / 10.0) + 1.0 * np.sin(T2)
     im2 = ax_w2.pcolormesh(F2, T2, Z2, cmap='plasma', shading='auto')
     ax_w2.set_xscale('log')
+    ax_w2.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
     ax_w2.set_title('InfraView Waterval 2: Dayton LFG Spectrogram (10 - 250 Hz) [dBA / dBZ]', fontsize=8.0, fontweight='bold', color='#002060')
     ax_w2.set_xlabel('Frequentie (Hz, Log)', fontsize=7)
     ax_w2.set_ylabel('Tijd (min)', fontsize=7)
@@ -542,6 +547,7 @@ def generate_report_charts_dict(data):
     ax.semilogx(freqs_10, lcorr_10, color='#d9534f', linewidth=2.8, label=f'RESULTANTE WARE HINDER Lcorr ({corr_dbz:.1f} dBZ)')
     ax.fill_between(freqs_10, l95_10, leq_10, color='#d9534f', alpha=0.12, label='Netto Immissie-Bijdrage Windturbine')
 
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
     ax.set_title('Grafiek 10.0: Breedspectrum Ware Hinder & Energetische Subtractie (3 - 2000 Hz) [dBZ]', fontsize=9.0, fontweight='bold', color='#002060')
     ax.set_xlabel('Frequentie (Hz, Logaritmisch)', fontsize=8, fontweight='bold')
     ax.set_ylabel('Geluidsdrukniveau dB(Z)', fontsize=8, fontweight='bold')
@@ -586,6 +592,7 @@ def generate_report_charts_dict(data):
     ax.axvspan(3, 20, color='#003366', alpha=0.06)
     ax.axvspan(20, 2000, color='#28a745', alpha=0.06)
 
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
     ax.set_title('Grafiek 11.0: Breedspectrum Resultante & Gemeten Spectrum (3 - 2000 Hz) [dB(Z) ➔ dB(A)]', fontsize=9.0, fontweight='bold', color='#002060')
     ax.set_xlabel('Frequentie (Hz, Logaritmisch)', fontsize=8, fontweight='bold')
     ax.set_ylabel('Geluidsniveau [dB(Z) / dB(A)]', fontsize=8, fontweight='bold')
