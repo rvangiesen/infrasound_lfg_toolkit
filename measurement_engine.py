@@ -8,6 +8,34 @@ import numpy as np
 import scipy.signal
 import scipy.fftpack
 
+import shutil
+
+def find_dracal_cli():
+    """Locate dracal-usb-get.exe executable across standard install paths and PATH."""
+    candidates = [
+        r"C:\Program Files\Dracal\Cmd\dracal-usb-get.exe",
+        r"C:\Program Files (x86)\Dracal\Cmd\dracal-usb-get.exe",
+        r".\tools\dracal-usb-get.exe"
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    which_path = shutil.which("dracal-usb-get") or shutil.which("dracal-usb-get.exe")
+    if which_path and os.path.exists(which_path):
+        return which_path
+    return r"C:\Program Files\Dracal\Cmd\dracal-usb-get.exe"
+
+def kill_dracalview_process():
+    """Terminate conflicting DracalView.exe process to release USB device lock."""
+    try:
+        if os.name == 'nt':
+            subprocess.run(["taskkill", "/F", "/IM", "DracalView.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(0.5)
+            return True
+    except Exception as e:
+        print(f"Error terminating DracalView: {e}")
+    return False
+
 # Thread-safe shared state for communication between engine and Streamlit app
 class SharedState:
     def __init__(self):
@@ -601,15 +629,16 @@ class MeasurementEngine:
         raw_buffer = [101325.0] * buf_size
         time_buffer = [0.0] * buf_size
         
-        dracal_path = self.config["dracal_path"]
-        dracal_mode = self.config["dracal_mode"]
+        dracal_path = self.config.get("dracal_path") or find_dracal_cli()
+        dracal_mode = self.config.get("dracal_mode", "usb")
         
         if dracal_mode == "usb":
-            # Start dracal-usb-get process in streaming mode
-            # -P Pa: Output in Pascal
-            # -i a: Output all channels
-            # -I <ms>: Interval (e.g. 1000/fs in ms)
-            # -L -: Continuous logging to stdout (REQUIRED for streaming)
+            if not os.path.exists(dracal_path):
+                dracal_path = find_dracal_cli()
+
+            # Ensure conflicting GUI process is terminated to avoid USB lock
+            kill_dracalview_process()
+
             interval_ms = int(1000 / fs)
             cmd = [dracal_path, "-P", "Pa", "-i", str(self.config["dracal_channel"]), "-I", str(interval_ms), "-7", "-L", "-"]
             

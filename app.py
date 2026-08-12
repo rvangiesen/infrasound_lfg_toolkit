@@ -446,9 +446,21 @@ elif cal_file_option == "Pad opgeven":
 st.sidebar.markdown("#### Dracal USB-BAR20/30 (Infrasound)")
 dracal_mode = st.sidebar.selectbox("Verbindingsmethode", ["usb", "vcp"], help="USB: direct via dracal-usb-get.exe. VCP: Virtuele COM-poort.")
 
+from measurement_engine import find_dracal_cli, kill_dracalview_process
+
 if dracal_mode == "usb":
-    dracal_path = st.sidebar.text_input("Pad naar dracal-usb-get.exe", value=r"C:\Program Files\Dracal\Cmd\dracal-usb-get.exe")
+    auto_dracal_path = find_dracal_cli()
+    dracal_path = st.sidebar.text_input("Pad naar dracal-usb-get.exe", value=auto_dracal_path)
     dracal_com_port = ""
+    
+    if os.path.exists(dracal_path):
+        st.sidebar.caption("✅ Dracal CLI Gedetecteerd")
+    else:
+        st.sidebar.warning("⚠️ dracal-usb-get.exe niet gevonden op dit pad")
+        
+    if st.sidebar.button("🛑 Sluit DracalView (Vrijgeven USB)", help="Sluit DracalView.exe indien actief, om de USB-barometer vrij te geven voor metingen."):
+        kill_dracalview_process()
+        st.sidebar.success("✓ DracalView.exe proces beëindigd. USB sensor is nu vrijgegeven!")
 else:
     dracal_com_port = st.sidebar.text_input("VCP COM-poort", value="COM3")
     dracal_path = ""
