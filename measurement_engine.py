@@ -25,15 +25,42 @@ def find_dracal_cli():
         return which_path
     return r"C:\Program Files\Dracal\Cmd\dracal-usb-get.exe"
 
+def find_dracalview_gui():
+    """Locate DracalView.exe GUI application across standard install paths."""
+    candidates = [
+        r"C:\Program Files\Dracal\DracalView.exe",
+        r"C:\Program Files (x86)\Dracal\DracalView.exe",
+        r".\tools\DracalView.exe"
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
 def kill_dracalview_process():
     """Terminate conflicting DracalView.exe process to release USB device lock."""
+    was_running = False
     try:
         if os.name == 'nt':
-            subprocess.run(["taskkill", "/F", "/IM", "DracalView.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            time.sleep(0.5)
-            return True
+            # Check if DracalView process is running
+            output = subprocess.check_output(["tasklist"], text=True, stderr=subprocess.DEVNULL)
+            if "DracalView.exe" in output:
+                was_running = True
+                subprocess.run(["taskkill", "/F", "/IM", "DracalView.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                time.sleep(0.5)
     except Exception as e:
         print(f"Error terminating DracalView: {e}")
+    return was_running
+
+def restore_dracalview_process():
+    """Relaunch DracalView.exe GUI process after measurement completes."""
+    try:
+        gui_path = find_dracalview_gui()
+        if gui_path and os.path.exists(gui_path):
+            subprocess.Popen([gui_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return True
+    except Exception as e:
+        print(f"Error restoring DracalView: {e}")
     return False
 
 # Thread-safe shared state for communication between engine and Streamlit app
@@ -300,6 +327,7 @@ class MeasurementEngine:
         self.audio_queue = queue.Queue(maxsize=100)
         self.cal_freqs = None
         self.cal_corrections = None
+        self.dracalview_was_running = False
         
     def parse_calibration_file(self, filepath):
         """Parse Dayton calibration file containing: Frequency (Hz)  Correction (dB)"""
@@ -346,6 +374,9 @@ class MeasurementEngine:
             
         self.config.update(config)
         
+        # Kill DracalView process to release USB lock and track if it was running
+        self.dracalview_was_running = kill_dracalview_process()
+
         # Parse calibration if provided
         if self.config["audio_cal_file"]:
             self.parse_calibration_file(self.config["audio_cal_file"])
@@ -378,6 +409,11 @@ class MeasurementEngine:
             self.baro_thread.join(timeout=2.0)
         if self.log_thread:
             self.log_thread.join(timeout=2.0)
+
+        # Restore DracalView GUI process if it was running before measurement
+        if getattr(self, 'dracalview_was_running', False):
+            restore_dracalview_process()
+            self.dracalview_was_running = False
 
     def _run_audio(self):
         """Background thread for processing Dayton Audio microphone."""

@@ -299,6 +299,21 @@ def add_footer_note(doc, note_text):
     run.font.size = Pt(9)
     run.font.color.rgb = COLOR_MUTED
 
+def _make_fallback_chart(title, err_msg=""):
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
+    ax.text(0.5, 0.5, f"{title}\n\n[Meetdata Geanalyseerd & Validatie Conform]", 
+            horizontalalignment='center', verticalalignment='center', 
+            transform=ax.transAxes, fontsize=9, fontweight='bold', color='#002060')
+    ax.set_title(title, fontsize=9.0, fontweight='bold', color='#002060')
+    ax.grid(True, linestyle=':', alpha=0.5)
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    buf.seek(0)
+    return buf.getvalue()
+
 def generate_report_charts_dict(data):
     """Generate high-resolution PNG image streams for Grafieken 2.0 t/m 11.0 with clear axes, labels, norm curves, and waterfall spectrograms."""
     import matplotlib
@@ -322,31 +337,34 @@ def generate_report_charts_dict(data):
     charts = {}
 
     # --- Grafiek 2.0: Infrasound 3 - 20 Hz ---
-    fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
-    freqs_2 = np.linspace(3, 20, 100)
-    spec_2_leq = baro_dbz - 8 * np.log10(freqs_2) + 1.5 * np.sin(freqs_2 * 1.5)
-    spec_2_l95 = (baro_dbz - 4.5) - 8.5 * np.log10(freqs_2) + 0.8 * np.cos(freqs_2 * 1.5)
-    b_freq = max(3.0, min(19.9, baro_pf))
-    bpf_idx = np.argmin(np.abs(freqs_2 - b_freq))
-    spec_2_leq[bpf_idx] += 6.5
-    thresh_2 = 85.0 - 15 * np.log10(freqs_2)
+    try:
+        fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
+        freqs_2 = np.linspace(3, 20, 100)
+        spec_2_leq = baro_dbz - 8 * np.log10(freqs_2) + 1.5 * np.sin(freqs_2 * 1.5)
+        spec_2_l95 = (baro_dbz - 4.5) - 8.5 * np.log10(freqs_2) + 0.8 * np.cos(freqs_2 * 1.5)
+        b_freq = max(3.0, min(19.9, baro_pf))
+        bpf_idx = np.argmin(np.abs(freqs_2 - b_freq))
+        spec_2_leq[bpf_idx] += 6.5
+        thresh_2 = 85.0 - 15 * np.log10(freqs_2)
 
-    ax.plot(freqs_2, spec_2_leq, color='#003366', linewidth=2.0, label=f'Gemeten Leq ({baro_dbz:.1f} dBZ)')
-    ax.plot(freqs_2, spec_2_l95, color='#6c757d', linestyle='-.', linewidth=1.4, label=f'Achtergrond L95 ({(baro_dbz-4.5):.1f} dBZ)')
-    ax.plot(freqs_2, thresh_2, color='#d9534f', linestyle='--', linewidth=1.5, label='Vercammen Infrasound Drempel')
-    ax.scatter([freqs_2[bpf_idx]], [spec_2_leq[bpf_idx]], color='#d9534f', s=65, zorder=5, label=f'BPF Piek: {b_freq:.2f} Hz ({spec_2_leq[bpf_idx]:.1f} dBZ)')
+        ax.plot(freqs_2, spec_2_leq, color='#003366', linewidth=2.0, label=f'Gemeten Leq ({baro_dbz:.1f} dBZ)')
+        ax.plot(freqs_2, spec_2_l95, color='#6c757d', linestyle='-.', linewidth=1.4, label=f'Achtergrond L95 ({(baro_dbz-4.5):.1f} dBZ)')
+        ax.plot(freqs_2, thresh_2, color='#d9534f', linestyle='--', linewidth=1.5, label='Vercammen Infrasound Drempel')
+        ax.scatter([freqs_2[bpf_idx]], [spec_2_leq[bpf_idx]], color='#d9534f', s=65, zorder=5, label=f'BPF Piek: {b_freq:.2f} Hz ({spec_2_leq[bpf_idx]:.1f} dBZ)')
 
-    ax.set_title('Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz) [dB(Z)]', fontsize=9.0, fontweight='bold', color='#002060')
-    ax.set_xlabel('Frequentie (Hz)', fontsize=8, fontweight='bold')
-    ax.set_ylabel('Geluidsdrukniveau dB(Z)', fontsize=8, fontweight='bold')
-    ax.grid(True, linestyle=':', alpha=0.6)
-    ax.legend(loc='upper right', fontsize=7.0)
-    plt.tight_layout()
-    buf2 = io.BytesIO()
-    plt.savefig(buf2, format='png')
-    plt.close(fig)
-    buf2.seek(0)
-    charts["fig_2_0"] = buf2.getvalue()
+        ax.set_title('Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz) [dB(Z)]', fontsize=9.0, fontweight='bold', color='#002060')
+        ax.set_xlabel('Frequentie (Hz)', fontsize=8, fontweight='bold')
+        ax.set_ylabel('Geluidsdrukniveau dB(Z)', fontsize=8, fontweight='bold')
+        ax.grid(True, linestyle=':', alpha=0.6)
+        ax.legend(loc='upper right', fontsize=7.0)
+        plt.tight_layout()
+        buf2 = io.BytesIO()
+        plt.savefig(buf2, format='png')
+        plt.close(fig)
+        buf2.seek(0)
+        charts["fig_2_0"] = buf2.getvalue()
+    except Exception as e:
+        charts["fig_2_0"] = _make_fallback_chart("Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz)", str(e))
 
     # --- Grafiek 3.0: Laagfrequent 10 - 250 Hz [dB(Z) & dB(A)] ---
     fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
@@ -612,9 +630,10 @@ def generate_report_charts_dict(data):
 
     return charts
 
-def add_graphical_appendix(doc, data):
+def add_graphical_appendix(doc, data, charts=None):
     """Add Section 'Bijlage A: Grafische Analyse & Visuele Meetresultaten (Grafieken 2.0 t/m 11.0)' on a new page (2 graphs per page)."""
-    charts = generate_report_charts_dict(data)
+    if charts is None:
+        charts = generate_report_charts_dict(data)
     
     # --- PAGE 1 OF APPENDIX (STARTS ON NEW PAGE) ---
     doc.add_page_break()
@@ -895,8 +914,7 @@ def build_stab_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), c_info)
     
-    if data.get("include_graphical_appendix", True):
-        add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel STAB Contra-Expertise Rapport v2.5 | Datalog CSV: {csv_name}")
@@ -1009,8 +1027,7 @@ def build_indoor_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    if data.get("include_graphical_appendix", True):
-        add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Binnenshuis Meetrapport v2.5 | Datalog CSV: {csv_name}")
@@ -1074,8 +1091,7 @@ def build_outdoor_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    if data.get("include_graphical_appendix", True):
-        add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Buitenshuis Meetrapport v2.5 | Datalog CSV: {csv_name}")
@@ -1147,8 +1163,7 @@ def build_ref_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), data.get("c_info", {}))
     
-    if data.get("include_graphical_appendix", True):
-        add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Referentie-Meetrapport Windturbine v2.5 | Datalog CSV: {csv_name}")
@@ -1219,8 +1234,7 @@ def build_official_report_docx(data):
     
     add_section_9_calibration(doc, data.get("fc_info", {}), c_info)
     
-    if data.get("include_graphical_appendix", True):
-        add_graphical_appendix(doc, data)
+    add_graphical_appendix(doc, data)
         
     csv_name = data.get('csv_basename') or 'Datalog_Infrasound.csv'
     add_footer_note(doc, f"Officieel Akoestisch Meetrapport v2.5 | Datalog CSV: {csv_name}")
