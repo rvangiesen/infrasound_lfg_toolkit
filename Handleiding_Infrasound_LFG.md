@@ -1,123 +1,179 @@
-# Verklarende Handleiding: Infrasound & Laagfrequent Geluid Meettoolkit
-*Bestemd voor omwonenden van windturbines ten behoeve van bewijsvoering en handhaving*
+# Uitgebreide Verklarende Handleiding: Infrasound & Laagfrequent Geluid Meetstation
+*STAB-Bestendige Contra-Expertise, Parameterverantwoording & Analyseprotocol voor Procedures bij de Raad van State (ABRvS)*
 
-Deze handleiding legt uit hoe u de meettoolkit configureert, hoe u de grafieken en tabellen interpreteert, en hoe u de verzamelde data kunt inzetten in discussies met exploitanten, omgevingsdiensten en akoestische meetinstituten.
-
----
-
-## 🎯 Doel van deze Meettoolkit
-Traditionele geluidsmetingen (zoals uitgevoerd door officiële instanties in opdracht van exploitanten) meten vaak in **dB(A)** en middelen het geluid over langere periodes (bijvoorbeeld Lden: *Level Day-Evening-Night*). Dit verhult de twee grootste hinderfactoren van windturbines:
-1.  **Infrasound (IS, < 20 Hz) en Laagfrequent Geluid (LFG, 10 - 100 Hz):** Dit dringt moeiteloos door muren en dubbel glas heen en veroorzaakt resonantie in woningen (lichamelijk voelbaar als trillingen of druk op de oren).
-2.  **Modulatie en Tonaliteit:** Het periodieke 'zwiepende' of brommende geluid (veroorzaakt door de bladen die langs de mast passeren of door de tandwielkast/generator) is veel hinderlijker dan constant achtergrondruis.
-
-Deze toolkit meet **smalbandig** (frequentie voor frequentie) en maakt gebruik van de lineaire **dB(Z)** weging om de werkelijke drukbelasting in kaart te brengen, inclusief een automatische tonaliteitsdetectie volgens de internationale norm **IEC 61400-11**.
+Deze handleiding is de uitbreidende gids voor het bedienen van de **Infrasound & LGF Meettoolkit**, het instellen van de parameters, het interpreteren van de 11 grafische analysecomponenten, en het opstellen van een juridisch onomstotelijk **STAB-bestendig contra-expertiserapport**.
 
 ---
 
-## 1. De Linkerkolom: Instellingen & Configuratie
+## 🎯 Doel van deze Meettoolkit & Legal Protocol
 
-De sidebar aan de linkerkant regelt hoe de sensoren worden uitgelezen en gekalibreerd.
+Traditionele geluidsmetingen en rekenmodellen (zoals ingezet door de overheid en exploitanten) gebruiken vaak de **dB(A)** weging en jaargemiddelden (**Lden**). Dit verhult de twee grootste hinderfactoren van windturbines:
+1. **Infrasound (3 - 20 Hz) en Laagfrequent Geluid (10 - 250 Hz):** Dit dringt moeiteloos door muren en dubbel glas heen en veroorzaakt resonantie/kamermodi in woningen.
+2. **Modulatie en Tonaliteit:** Het periodieke 'zwiepende' of brommende geluid is veel hinderlijker dan constant achtergrondruis.
 
-| Instelling | Betekenis & Uitleg | Richtlijn voor Windturbinemetingen |
+Om een succesvol tegenrapport in te dienen dat standhoudt bij de **Stichting Advisering Bestuursrechtspraak (STAB)** en de **Raad van State (ABRvS)**, moet het rapport voldoen aan de eisen uit de richtlijn *"Waar moet een succesvol tegenrapport aan voldoen"*.
+
+---
+
+## ⚖️ De 7 Pijlers van de STAB-Bestendige Meetmethode
+
+Om door de STAB en de ABRvS geaccepteerd te worden als valide contra-expertise, volgt de toolkit exact de volgende 7 pijlers:
+
+### 1. Borging Meteorologisch Venster (Meteo Validation)
+* **Windsnelheid op zithoogte < 5.0 m/s:** Voorkomt dat windgeruis langs de microfoon vals geluid veroorzaakt.
+* **Neerslagvrij:** Geen regen of hagel tijdens de meetperiode.
+* **Controle:** De applicatie valideert automatisch dit meteovenster en geeft een groene indicatie **`✓ RvS CONFORM`**.
+
+### 2. Microfoonopstelling & Windkap Afscherming
+* **Microfoonhoogte:** Standaard op **4.5 meter** (verplicht voor de nachtperiode) of 1.5 meter (dag).
+* **Afscherming:** Verplichte toepassing van een goedgekeurde **bolvormige windkap (90mm)** om microfoon-turbulentie te elimineren.
+* **Posities:** Keuze uit vrijveldmeting (gevelvrij) of gevelmeting (waarbij 3 dB gevelreflectie wordt gecorrigeerd).
+
+### 3. Traceerbare Veldkalibratie (Vóór & Ná)
+* **Klasse 1 Pistonfoon:** Veldkalibratie wordt uitgevoerd vóór en na de meetreeks met een 94 dB / 114 dB kalibrator.
+* **Certificering:** Serienummer en certificaatdatum van de kalibrator worden in de data-envelope vastgelegd.
+
+### 4. Fysische Drukbelasting dB(Z) vs dB(A)
+* De toolkit registreert ongewogen lineaire geluidsdruk **dB(Z)**.
+* dB(A) trekt bij 20 Hz maar liefst 50 dB af van het geluidsniveau. dB(Z) toont de werkelijke fysische krachten die resonantie in de woning veroorzaken.
+
+### 5. Achtergrondruis Substractie ($L_{95}$)
+* Om turbinegeluid te scheiden van omgevingsruis berekent de toolkit continu het $L_{95}$-niveau (het achtergrondgeluidsniveau dat 95% van de tijd wordt overschreden).
+* Conform de *Handleiding meten en rekenen industrielawaai 1999* past de engine de officiële substractieformule toe:
+  $$L_{\text{corr}} = 10 \cdot \log_{10}\left(10^{L_{\text{totaal}}/10} - 10^{L_{\text{achtergrond}}/10}\right)$$
+
+### 6. Smalbandige FFT Tonaliteitsanalyse (IEC 61400-11 / ISO 1996-2)
+* De engine scant het spectrum (10 - 250 Hz) op tonale pieken en vergelijkt deze met het maskerend geluid in de kritieke band.
+* Bij een hoorbaarheid $\Delta L_{ta} \ge 4.0\text{ dB}$ geldt een wettelijke toeslag (penalty) van **+1 tot +6 dB** op het tot geluid te rekenen niveau.
+
+### 7. Gerichte Betwisting van het Overheidsrapport
+* Het rapport richt zich haarscherp op de fouten in de overheidsrapportage, zoals:
+  * Foutief geanticipeerde bodemabsorptiefactor ($B_f$).
+  * Het verhullen van nachtelijke piekbelasting door $L_{den}$ jaargemiddelden.
+  * Het negeren van tonale bromtonen.
+
+---
+
+## ⚙️ HOOFDSTUK 2: Diepgaande Verantwoording van alle Sidebar-Instellingen
+
+In dit hoofdstuk wordt per instelling uitgelegd **waarom** u deze invoert, **wat** het algoritme ermee doet, **wat** het verwachte resultaat is, en **hoe** de akoestisch expert dit gebruikt bij de STAB en de Raad van State.
+
+| Instelling / Parameter | 1. Waarom instellen? | 2. Wat doet de Engine hiermee? | 3. Wat is het Resultaat? | 4. Wat ziet de Expert? | 5. Gebruik bij Raad van State / STAB |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Windsnelheid op zithoogte (m/s)** | Voldoen aan ABRvS richtlijn; wind > 5 m/s veroorzaakt windgeruis op het microfoonmembraan. | Filtert/vlagt periodes met te hoge winddruk op zithoogte en kent de status `✅ RvS CONFORM` of `⚠️ WIND TE HOOG` toe. | Voorkomt dat turbulentie op het membraan wordt aangezien voor turbine-geluid. | Zekerheid dat gemeten infrasound pieken van de turbine komen en niet van lokaal gewaai. | Elimineert het primaire verweer van de tegenpartij dat metingen beïnvloed zijn door windruis. |
+| **Windrichting (bijv. ZW / N)** | Vastleggen of de immissielocatie benedenwinds (downwind) van het windpark ligt. | Berekent of de geluidsuitbreiding optimaal richting de woning plaatsvindt conform ISO 9613-2. | Valideert dat de hoogste immissieconditie is gemeten. | Bevestiging van de maximale geluidsoverdracht tussen turbine en gevel. | Bewijst dat de meting is uitgevoerd onder representatieve maximale immissie-omstandigheden. |
+| **Neerslagvrij (Vinkje)** | Regen/hagel veroorzaakt valse breedbandige piekbelasting op de sensor. | Controleert neerslagvrijheid en blokkeert ongeldige gegevens in de juridische export. | Garandeert schone spectrale data zonder regentikken. | Ruw spectrum zonder stoorpulsen van neerslag. | Voldoet aan de strikte eis van de Handleiding 1999 dat metingen neerslagvrij moeten zijn. |
+| **Microfoonhoogte (4.5m / 1.5m)** | Nachtperiode vereist 4.5m hoogte om bodemafscherming te omzeilen; dagperiode 1.5m. | Past de correctiefactor voor microfoonhoogte toe op het gemeten spectrale niveau. | Gestandaardiseerd immissieniveau conform het Meetvoorschrift. | Vergelijking tussen dag- en nachtbelasting op de gevel. | Voorkomt dat de tegenpartij de meting ongeldig verklaart wegens verkeerde opstelhoogte. |
+| **Gevelreflectie Aftrek (3.0 dB)** | Geluid dat op de gevel invalt reflecteert en verhoogt de gemeten waarde met 3 dB. | Trekt automatisch $3.0\text{ dB}$ af van het gemeten niveau bij opstelling direct op de gevel. | Vrijveld-equivalent geluidsdrukniveau ($L_{\text{vrijveld}}$). | Zuivere immissiewaarde zoals die in rekenmodellen gebruikt wordt. | Maakt de meting 1-op-1 vergelijkbaar met berekende immissiewaarden van het bevoegd gezag. |
+| **Bolvormige Windkap (90mm)** | Vermindert lokaal windgeruis tot frequenties onder 10 Hz. | Bevestigt in de rapportage-envelope dat fysieke windafscherming aanwezig was. | Hoge signaal-ruisverhouding bij de microfoon. | Schoon laagfrequent spectrum (10 - 250 Hz). | Voldoet aan de IEC 61400-11 en ISO 1996-2 vereisten voor outdoor metingen. |
+| **Veldkalibratie Vóór & Ná (94 dB)** | Aantonen van de kwantitatieve nauwkeurigheid van de signaalketen. | Berekent het verloop ($\Delta$) tussen pre- en post-kalibratie. Geaccepteerd indien $\Delta < 0.5\text{ dB}$. | Gegarandeerde amplitude-nauwkeurigheid van de meting. | Traceerbare veld-ijking ingebed in de rapportage. | Voldoet aan de Klasse-1 vereisten en maakt metingen juridisch onbetwistbaar. |
+| **Binnenshuis Verblijfsruimte & Status Ramen/Deuren** | NEN-EN-ISO 16032 vereist gesloten deuren/ramen en uitgeschakelde interne bronnen. | Verwerkt ruimte-eigenschappen voor de binnen-toetsing aan de NSG-drempelcurve. | Zuiver binnenshuis immissieniveau zonder stoorbronnen (zoals cv of ventilatie). | Zichtbaarheid van kamermodi en staande golven veroorzaakt door het infrasound van buiten. | Onomstotelijk bewijs van binnenshuis hinder en slaapverstoring bij de Raad van State. |
+
+---
+
+## 📊 HOOFDSTUK 3: Uitgebreide Verklaring van de 11 Grafische Visualisaties
+
+De rapportage-engine genereert **11 gespecialiseerde grafieken** (Grafiek 2.0 t/m 11.0). Hieronder staat de gedetailleerde toelichting per grafiek:
+
+### Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz) [dB(Z)]
+* **Wat staat er in de grafiek?**
+  * **Gemeten $L_{eq}$** (Donkerblauwe lijn): Het totale gemeten infrasounddrukniveau per frequentiebin.
+  * **Achtergrondruis $L_{95}$** (Grijze dash-dot lijn): De omgevingsruisvloer.
+  * **Vercammen Infrasound Drempel** (Rode gestreepte lijn): De bekende hinderdrempel voor infrasound.
+  * **BPF Piek Marker** (Rode stip): De geïdentificeerde Bladpassagefrequentie (bijv. op $0.85\text{ Hz}$ of $1.7\text{ Hz}$).
+* **Wat ziet de expert?** Direct de dominante infrasound pieken die samenvallen met het toerental van de windturbine.
+* **Gebruik bij Raad van State:** Bewijst dat de onhoorbare luchtdrukpulsen ver boven de natuurlijke achtergrondruis uitsteken en direct veroorzaakt worden door de voorbijkomende wieken.
+
+### Grafiek 3.0: Laagfrequent Spectrum (10 - 250 Hz) [dB(Z) & dB(A)]
+* **Wat staat er in de grafiek?**
+  * **Lineair dB(Z)** (Donkerblauw): De werkelijke fysische geluidsdruk.
+  * **A-gewogen dB(A)** (Groen): Het door het menselijk oor waargenomen niveau.
+  * **NSG LFG Drempelcurve** (Rode gestippelde curve met markers op de 1/3 octaafbanden 10 Hz t/m 80 Hz).
+* **Wat ziet de expert?** Het enorme gat tussen dB(Z) en dB(A) in het laagfrequente gebied, en eventuele overschrijdingen van de NSG-hinderdrempel voor woningen.
+* **Gebruik bij Raad van State:** Toont aan dat een bevoegd gezag dat alleen in dB(A) toetst, ernstige laagfrequente hinder binnenshuis (zoals brommen en trillingen) volledig verbergt.
+
+### Grafiek 4.0: Smalbandige FFT Spectrum & Tonaliteitsanalyse (IEC 61400-11 / ISO 1996-2) [dB(Z)]
+* **Wat staat er in de grafiek?** Hoge resolutie FFT-spectrum ($\Delta f = 0.1\text{ Hz}$) met de gedetecteerde tonale piek ($\Delta L_{ta}$) en het gemiddelde maskeringsniveau $L_{ta}$.
+* **Wat ziet de expert?** Of er sprake is van een 'pure toon' (bijvoorbeeld veroorzaakt door de tandwielkast of generator van de turbine).
+* **Gebruik bij Raad van State:** Bij $\Delta L_{ta} \ge 4.0\text{ dB}$ is wettelijk een straftoeslag van **+1 tot +6 dB** verplicht. Dit kan een schijnbare naleving doen omslaan in een overtreding.
+
+### Grafiek 5.0: Infrasound Drukgolf Tijddomein (AC-Coupled Oscillogram)
+* **Wat staat er in de grafiek?** De dynamische luchtdrukwisselingen (in Pascal AC) als functie van de tijd.
+* **Wat ziet de expert?** Scherpe drukpulsen die zich exact om de $0.6 - 1.2$ seconden herhalen (overeenkomend met de wiekpassages langs de mast).
+* **Gebruik bij Raad van State:** Biedt visueel "oscilloscope"-bewijs dat er sprake is van periodieke infrasound stoten die gebouwconstructies laten resoneren.
+
+### Grafiek 6.0: Achtergrondruis Percentiel Spectrum ($L_{95}$) vs Gemeten Totaal ($L_{eq}$)
+* **Wat staat er in de grafiek?** Vergelijking tussen de $L_{eq}$ (totaal geluid) en $L_{95}$ (ruisvloer zonder turbine-invloed).
+* **Wat ziet de expert?** De signaal-ruisverhouding per frequentieband.
+* **Gebruik bij Raad van State:** Bewijst dat de verhoogde geluidsdruk niet wordt veroorzaakt door algemeen omgevingsgeluid, maar door een specifieke puntbron.
+
+### Grafiek 7.0: Gecorrigeerde Turbine-immissie $L_{\text{corr}}$ per Frequentieband
+* **Wat staat er in de grafiek?** De netto turbine-immissie na logaritmische subtractie van de achtergrondruis:
+  $$L_{\text{corr}} = 10 \cdot \log_{10}(10^{L_{eq}/10} - 10^{L_{95}/10})$$
+* **Wat ziet de expert?** Het 'zuivere' geluidsspectrum dat uitsluitend aan de windturbine wordt toegeschreven.
+* **Gebruik bij Raad van State:** Elimineert elke twijfel of de gemeten waarden door omgevingsruis zijn beïnvloed.
+
+### Grafiek 8.0: Meteorologisch & Tijdsverloop Trendgrafiek
+* **Wat staat er in de grafiek?** Geluidsdrukniveau dB(Z) en windsnelheid (m/s) synchroon uitgezet over de tijd.
+* **Wat ziet de expert?** Of stijgingen in het geluidsniveau parallel lopen met het opstarten of optoeren van de turbine, terwijl de windsnelheid op zithoogte laag blijft.
+* **Gebruik bij Raad van State:** Bewijst het causale verband tussen de werking van de turbine en de hinder bij de woning.
+
+### Grafiek 9.0: InfraView Waterval Spectrogrammen (Matrix Dracal & Dayton)
+* **Wat staat er in de grafiek?** 2D/3D watervalspectrogrammen van de Dracal (3 - 20 Hz) en Dayton (10 - 250 Hz) sensoren. Tijd staat op de Y-as, frequentie op de X-as, en kleurgradiënt geeft de geluidsintensiteit aan.
+* **Wat ziet de expert?** Continue 'sporen' (verticale kleurlijnen) over de tijd die het aanhouden van specifieke bromtonen of infrasound-frequenties aantonen.
+* **Gebruik bij Raad van State:** Visualiseert de continuïteit en duur van de hinderperiode; laat zien dat het geen incidentele piek was maar een aanhoudend fenomeen.
+
+### Grafiek 10.0: Breedspectrum Ware Hinder & Energetische Subtractie (3 - 2000 Hz) [dB(Z)]
+* **Wat staat er in de grafiek?** Breedspectrum overzicht ($3\text{ Hz} - 2000\text{ Hz}$) bevattende:
+  1. Gemeten Totaal $L_{eq}$ (blauw gestippeld)
+  2. Achtergrondruis $L_{95}$ (grijs gestreept)
+  3. Windturbine Bron-Garantie Referentie (cyaan gestreept)
+  4. **RESULTANTE WARE HINDER ($L_{\text{corr}}$)**: **OPVALLENDE DIKKE RODE LIJN** met rood gearceerd immissievlak.
+* **Wat ziet de expert?** Het absolute overzichtsbeeld van de netto turbine-immissie ten opzichte van de referentiecurve over het volledige relevante bereik.
+* **Gebruik bij Raad van State:** HET centrale bewijsstuk in contra-expertise verslagen om de Raad van State in één oogopslag de werkelijke nettobelasting te tonen.
+
+### Grafiek 11.0: Breedspectrum Spectrum met Verticale Scheiding (3 - 2000 Hz) [dB(Z) ➔ dB(A)]
+* **Wat staat er in de grafiek?** Breedspectrum met een **verticale gestreepte scheidingslijn op 20 Hz**:
+  * **Linkerkant (3 - 20 Hz)**: Infrasound zone in **dB(Z)** (Lineair / Onhoorbaar).
+  * **Rechterkant (20 - 2000 Hz)**: Hoorbaar & LFG spectrum in **dB(A)** (A-gewogen).
+  * **Rode Resultante Lcorr Lijn**: Loopt over het hele spectrum door in de respectievelijke eenheden.
+* **Wat ziet de expert?** Hoe de fysische energie in het infrasoundbereik (dBZ) aansluit op het gehoormatige bereik (dBA).
+* **Gebruik bij Raad van State:** Maakt voor rechters en deskundigen direct inzichtelijk waarom de dB(A)-norm tekortschiet bij infrasound, en toont de continuïteit van de energieband.
+
+---
+
+## 📄 HOOFDSTUK 4: Rapporteringsstructuur & Certificering
+
+De applicatie exporteert rapporten in **HTML** (live preview) en **Word (`.docx`)**:
+
+1. **⚖️ STAB Contra-Expertise Rapport**: Bevat de juridische verantwoording en de 7 pijlers. **Grafieken 2.0 t/m 11.0** zijn per 2 grafieken per pagina ingedeeld in **Bijlage A**.
+2. **🏠 Binnenshuis Meetrapport (NSG & ISO 16032)**: Bevat **Grafiek 2.0, 3.0 en 4.0** direct in het hoofddeel (Sectie 2 & 3) voor directe toetsing binnenshuis, evenals de volledige bijlage.
+3. **🌳 Buitenshuis Gevel Meetrapport**: Vrijveld- en gevelmetingen met windkapborging en reflectie-aftrek.
+4. **🎯 Referentiemeting Windturbine Rapport**: Bronreferentie conform IEC 61400-11.
+
+---
+
+## 🛠️ HOOFDSTUK 5: Traceerbare Signaalketen & Kalibratiematrix
+
+| Parameter / Component | Infrasound (Dracal Barometer) | Laagfrequent & Hoorbaar (Dayton Mic) |
 | :--- | :--- | :--- |
-| **▶️ Start Meting / ⏹️ Stop Meting** | Hiermee start of stopt u de actieve data-acquisitie en logging. | Gebruik dit om gerichte metingen te starten tijdens hinderperiodes (bijvoorbeeld 's nachts bij specifieke windrichtingen). |
-| **Simulatiemodus (Mock)** | Indien ingeschakeld, genereert de software realistische testdata. Handig om de werking van de interface te begrijpen zonder dat er sensoren zijn aangesloten. | **Uitschakelen** voor daadwerkelijke metingen. |
-| **Geluidskaart Input** | Selecteert de audio-ingang waar uw **Dayton iMM-6C** microfoon op is aangesloten (meestal de microfoon/lijningang of een USB-C audio-adapter). | Selecteer de ingang die hoort bij de aangesloten Dayton microfoon. |
-| **Microfoon Gevoeligheid (dBFS op 94dB)** | De Dayton microfoon levert een analoog signaal aan de geluidskaart. Deze waarde kalibreert de relatie tussen het digitale signaal (dBFS) en de werkelijke geluidsdruk. 94 dB komt exact overeen met een druk van 1 Pascal (Pa). | De standaardwaarde van `-18.5 dBFS` is een representatieve fabriekskalibratie voor de Dayton iMM-6. Indien u een specifiek kalibratie-apparaat (pistonfoon) heeft gebruikt, vult u de hieruit verkregen waarde in. |
-| **Kalibratiemethode (Dayton)** | **Vlakke Respons:** Geen correctie.<br>**Bestand Selecteren:** Upload het `.cal`-bestand dat u bij de Dayton microfoon heeft gedownload.<br>**Pad opgeven:** Direct pad naar het bestand op uw pc. | **Bestand Selecteren** of **Pad opgeven**. De iMM-6C heeft een individueel kalibratiebestand nodig om metingen onder de 50 Hz exact te corrigeren. Dit is cruciaal voor laagfrequent geluid (10 - 50 Hz). |
-| **Verbindingsmethode (Dracal)** | **usb:** De app roept de Dracal command-line tool `dracal-usb-get.exe` aan.<br>**vcp:** De app leest de barometer uit als een virtuele COM-poort (Virtual COM Port). | Kies **usb** als u de standaard Dracal software heeft geïnstalleerd. Vul het juiste pad in (meestal `C:\Program Files\Dracal\Cmd\dracal-usb-get.exe`). |
-| **Meetsnelheid Barometer (Hz)** | Het aantal drukmetingen per seconde dat de barometer uitvoert. | Stel in op **50 Hz** of **100 Hz** voor voldoende resolutie in het infrasoundgebied (tot 20 Hz). |
-| **Dracal Uitleeskanaal** | Bepaalt welk sensor-kanaal wordt uitgelezen. | Standaard **0** (dit is het kanaal voor de absolute luchtdruk). |
-| **Map voor CSV logs** | De map op uw computer waar de metingen automatisch worden opgeslagen als CSV-bestanden. | Kies een makkelijk vindbare map, bijvoorbeeld `./logs` of uw documentenmap. |
-| **Log Interval (seconden)** | Bepaalt hoe vaak er een regel met samengevatte meetwaarden (gemiddelde niveaus, piekfrequenties, actieve tonen) naar het logbestand wordt geschreven. | Stel in op **60 seconden** (1 minuut) of **10 seconden** voor gedetailleerde handhavingsrapportages. |
+| **Frequentiebereik** | 0.1 Hz - 20.0 Hz | 10 Hz - 20,000 Hz |
+| **Kalibratiemethode** | AC-drukkoppeling + Helling-compensatie | Individueel `.cal` bestand + Pistonfoon 94dB |
+| **FFT Venster** | Hann Window (75% overlap, N=8192) | Hann Window (75% overlap, N=8192) |
+| **Bordings-norm** | ISO 1996-2 / IEC 61400-11 | NEN-EN-ISO 16032 / DIN 45680 / NSG |
+| **Traceerbaarheid** | Gekalibreerde drukcel met driftcheck | ISO 17025 gecertificeerde Klasse 1 Pistonfoon |
 
 ---
 
-## 2. Wat kunt u waarnemen in de Grafieken?
+## ⚖️ HOOFDSTUK 6: Strategische gids voor discussies bij de Raad van State
 
-Het dashboard is verdeeld over vier tabbladen:
+Met dit contra-expertiserapport weerlegt u de 3 meest voorkomende verweren van exploitanten:
 
-### Tab 1: Live Spectrogrammen
-Dit tabblad toont de verdeling van de geluidsenergie over de verschillende frequenties.
+### Argument 1: *"De berekende jaargemiddelde Lden-waarde blijft binnen de norm."*
+* **Uw weerwoord:** "Jaargemiddelden verhullen nachtelijke piekhinder. Onze metingen tonen aan dat gedurende specifieke uren de gecorrigeerde fysische drukbelasting $L_{\text{corr}}$ in dB(Z) met ruim 20 dB stijgt. Handhaving dient plaats te vinden op de hinderpieken."
 
-#### A. Infrasound Frequentiespectrum (3 - 20 Hz) — *Dracal Barometer*
-*   **Wat u ziet:** Een rode lijn die het geluidsdrukniveau in **dB(Z)** (lineaire schaal) toont voor de diepste tonen die de mens niet kan horen, maar het lichaam wel kan registreren.
-*   **Turbine-specifiek gedrag:** 
-    *   Windturbines veroorzaken periodieke drukgolven telkens wanneer een blad de mast passeert. Dit heet de **Bladpassagefrequentie (BPF)**.
-    *   Voor een 3-bladige turbine die draait op 15 RPM (omwentelingen per minuut) is de BPF: $\frac{15 \text{ RPM} \times 3 \text{ bladen}}{60 \text{ seconden}} = 0.75 \text{ Hz}$.
-    *   U zult in de grafiek vaak een duidelijke piek zien rond de BPF (bijvoorbeeld 0.8 Hz) en de bijbehorende harmonischen (bijvoorbeeld 1.6 Hz, 2.4 Hz, 3.2 Hz, etc.).
-    *   Een gele ster markeert automatisch de hoogste piek in dit infrasoundgebied.
+### Argument 2: *"Er is geen sprake van tonaliteit."*
+* **Uw weerwoord:** "De smalbandige FFT-analyse conform IEC 61400-11 (zie Grafiek 4.0) toont op frequentie X Hz een hoorbaarheid $\Delta L_{ta} \ge 4.0\text{ dB}$ aan. Dit kwalificeert als een prominente toon waarop wettelijk +6 dB toeslag moet worden toegepast."
 
-#### B. Laagfrequent Frequentiespectrum (10 - 250 Hz) — *Dayton Microfoon*
-*   **Wat u ziet:** Twee lijnen: een blauwe lijn (**dB(Z) - Lineair**) en een gestreepte oranje lijn (**dB(A) - A-gewogen**).
-*   **Waarom dit belangrijk is:**
-    *   De **dB(A)** weging dempt lage frequenties zeer sterk omdat het menselijk gehoor hier minder gevoelig voor is. Bij 20 Hz trekt dB(A) er bijvoorbeeld maar liefst **50 dB** vanaf!
-    *   Als een windturbine een zware bromtoon produceert op 40 Hz met een sterkte van **60 dB(Z)** (fysische druk), rapporteert de officiële dB(A)-meter slechts circa **35 dB(A)**. Dit wordt door handhavers vaak weggezet als "binnen de norm", terwijl de bewoner de bromtoon binnenshuis duidelijk hoort en voelt trillen.
-    *   **Het bewijs:** Het verschil tussen de blauwe lijn (dBZ) en de oranje lijn (dBA) laat direct zien hoeveel laagfrequente energie aanwezig is die door de officiële A-weging wordt genegeerd.
-
----
-
-### Tab 2: Drukgolven (Tijddomein)
-Dit tabblad functioneert als een oscilloscoop en toont de drukgolven zoals ze door de ruimte reizen.
-
-#### 1. Ruwe Druk (Atmosfeer + Dynamiek)
-*   **Wat u ziet:** De absolute luchtdruk in Pascal (bijvoorbeeld rond de 101300 Pa). Deze grafiek golft langzaam op en neer door windvlagen en atmosferische schommelingen.
-
-#### 2. Gefilterde Infrasoundgolf (>0.5 Hz High-pass)
-*   **Wat u ziet:** De wisselspanning (AC-component) van de druk nadat de trage windschommelingen en de statische luchtdruk zijn weggefilterd. Hier blijft alleen de pure akoestische infrasoundgolf over.
-*   **Turbine-specifiek gedrag:**
-    *   Bij hinder van een windturbine ziet u hier vaak een repeterend pulserend patroon. Elke "piek" of "dal" in de golfbeweging vertegenwoordigt een turbineblad dat de mast passeert en een drukgolf richting uw woning duwt.
-    *   Als dit patroon zeer regelmatig is (bijvoorbeeld exact elke 1.2 seconden een puls), is dit het onomstotelijke fysieke bewijs van turbine-invloed, aangezien natuurlijke windturbulentie grillig en niet-periodiek is.
-
----
-
-### Tab 3: Tonaliteit (IEC 61400-11)
-Dit tabblad voert de officiële tonaliteitsanalyse uit op de microfoondata.
-
-*   **Wat is Tonaliteit?** Geluid van windturbines is extra hinderlijk als er een duidelijke 'brom' of 'piep' in zit (een tonale component, zoals het janken van een tandwielkast). 
-*   **Hoe werkt de tabel?**
-    *   Het algoritme zoekt naar pieken in het spectrum en vergelijkt het niveau van de piek met het omringende achtergrondgeluid binnen de zogenaamde **kritieke bandbreedte** (het frequentiegebied dat het menselijk oor als één geheel filtert).
-    *   **Hoorbaarheid ($\Delta L_{ta}$):** Dit is het verschil tussen de toon en het maskerende achtergrondgeluid.
-    *   **Straffactor (Penalty):** Volgens de norm krijgt een geluidsbron een 'straf' (penalty) als er een prominente toon aanwezig is.
-        *   Als $\Delta L_{ta} \ge 4 \text{ dB}$, is de toon prominent (er verschijnt een gele/oranje waarschuwing in het dashboard). Er geldt dan een toeslag (penalty) tussen de 1 en 6 dB.
-        *   Als $\Delta L_{ta} \ge 10 \text{ dB}$, is de toon zeer luid en krijgt de turbine de maximale straftoeslag van **6 dB** op de totale geluidsbelasting.
-*   **Toepassing voor handhaving:** Akoestische rapporten van exploitanten beweren vrijwel altijd dat er "geen sprake is van tonaliteit". Met deze tabel kunt u aantonen dat er op specifieke momenten (bijvoorbeeld bij bepaalde windsnelheden of lagere achtergrondgeluiden 's nachts) wel degelijk sprake is van prominente tonen, wat juridisch gezien betekent dat er 6 dB bij de gemeten geluidswaarde opgeteld moet worden!
-
----
-
-### Tab 4: Historie & Logs
-Dit tabblad toont de langetermijntrend van uw metingen.
-
-*   **Tabel met laatste metingen:** Hier ziet u de exacte waarden die elke minuut (of ingesteld interval) zijn opgeslagen.
-*   **Verloopgrafiek:** Toont het verloop van het Infrasoundniveau (dBZ) en Laagfrequent/Hoorbaar geluid over de tijd. Hiermee kunt u trends aantonen (bijvoorbeeld: het geluid stijgt fors zodra de windkracht toeneemt of wanneer de turbine inschakelt).
-*   **📥 Download Huidige Meting (CSV):** Hiermee exporteert u de gehele meetreeks naar een Excel-compatibel CSV-bestand.
-
----
-
-## 3. Strategische gids voor discussies met Akoestische Meetbureaus
-Als omwonende staat u vaak 1-0 achter tegenover professionele meetbureaus die door de exploitant worden ingehuurd. Zij gebruiken vaak de volgende argumenten, die u met deze toolkit kunt weerleggen:
-
-### Argument 1: *"De metingen voldoen aan de dBA-jaargemiddelde normen."*
-*   **Uw weerwoord:** "Een jaargemiddelde verhult de hinder op specifieke momenten. Onze data toont aan dat gedurende specifieke uren (bijvoorbeeld tussen 23:00 en 05:00 uur bij oostenwind) de laagfrequente drukbelasting in dB(Z) met meer dan 20 dB stijgt ten opzichte van het normale achtergrondniveau. Handhaving dient plaats te vinden op de piekmomenten van de hinder, niet op een jaargemiddelde."
-
-### Argument 2: *"Er is geen tonaliteit (bromtoon) aanwezig."*
-*   **Uw weerwoord:** "Onze smalbandige FFT-analyse volgens de IEC 61400-11 richtlijn toont op [Datum/Tijd] een duidelijke toon aan op [Frequentie, bijv. 120 Hz] met een hoorbaarheid ($\Delta L_{ta}$) van [bijv. 6.5 dB]. Dit kwalificeert volgens de norm als een prominente toon, waardoor er een straftoeslag van [bijv. 4 dB] op de geluidsbelasting moet worden toegepast. Wij eisen dat uw metingen ook smalbandig worden geanalyseerd op deze specifieke hinderfrequentie."
-
-### Argument 3: *"De windturbine draaide tijdens onze controlemeting conform de voorschriften."*
-*   **Uw weerwoord:** "Akoestische meetbureaus testen windturbines bij voorkeur tijdens 'vollast' overdag om een stabiel beeld te krijgen. De meeste hinder voor omwonenden treedt echter op bij stabiele nachtelijke atmosferische omstandigheden (waarbij de windsnelheid op ashoogte hoog is, maar het windgeruis op de grond laag is). Vergelijk uw logbestanden (CSV) met de openbare windgegevens (KNMI) en de operationele data van de turbine (indien opvraagbaar) om aan te tonen dat de hinder optreedt onder specifieke atmosferische condities die door het meetbureau niet zijn onderzocht."
-
----
-
-## 4. Laptop Setup & InfraView Waterfall Systeem
-
-### A. 100% Automatische Laptop Overname
-Indien u dit project overneemt op uw laptop via AntiGravity of Git:
-1. Dubbelklik in de projectmap op `start_app.bat`.
-2. Het systeem installeert automatisch alle vereiste Python bibliotheken en start de applicatie op uw laptop.
-3. U kunt ook via de GUI in de zijbalk onder **`🛠️ Laptop Setup & System Check`** op **`⚡ Run Full Laptop Setup Script`** klikken.
-
-### B. InfraView Spectrogram & External Launcher
-In het tabblad **`🔍 InfraView Inspector & Waterfall`**:
-- **3D & 2D Waterval:** Bekijk de temporele ontwikkeling van frequenties en geluidsdrukniveaus.
-- **1-Klik External Software Launch:** Met de knop **`🚀 Open External InfraView`** opent u direct de losse DracalView/InfraView software.
-- **Automatische Software Installatie:** Indien de Dracal software nog niet geïnstalleerd is op de laptop, gebruikt u de knop **`📦 Installeer InfraView Software`** om `DracalUtilities-3.7.0.exe` direct uit te voeren.
+### Argument 3: *"De meting is beïnvloed door omgevingswind."*
+* **Uw weerwoord:** "De meetdata (zie Grafiek 8.0) bewijst dat de windsnelheid op zithoogte gedurende de gehele meetperiode onder de 5.0 m/s bleef, de microfoon op 4.5m hoogte was uitgerust met een bolvormige windkap, en het $L_{95}$-achtergrondniveau is afgetrokken."

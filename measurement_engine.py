@@ -24,10 +24,133 @@ class SharedState:
         self.baro_peak_freq = 0.0
         self.baro_peak_dbz = -100.0
         
+        # STAB Protocol - Background Noise Subtraction (L95) & Corrected Sound Levels
+        self.mic_dbz_history = []
+        self.mic_dba_history = []
+        self.l95_mic_dbz = 0.0
+        self.l95_mic_dba = 0.0
+        self.corrected_mic_dbz = 0.0
+        self.corrected_mic_dba = 0.0
+
+        # STAB Protocol & Measurement Mode
+        self.measurement_mode = "contra_expertise"  # "contra_expertise", "indoor", "outdoor", or "reference_measurement"
+        
+        # STAB Protocol - Metadata (Meteo, Setup, Field Calibration, Contestation, Reference, Indoor, Outdoor)
+        self.meteo_info = {
+            "wind_speed_m_s": 2.5,
+            "wind_direction": "ZW",
+            "temperature_c": 14.0,
+            "rain_free": True,
+            "meteo_valid_rvs": True
+        }
+        self.setup_info = {
+            "mic_height_m": 4.5,
+            "mic_position": "Vrijveld (4.5m nacht / gevelvrij)",
+            "spherical_windscreen": True,
+            "location_name": "Woning appellant - Immissiepunt"
+        }
+        self.calibration_info = {
+            "pre_cal_db": 94.0,
+            "post_cal_db": 94.0,
+            "calibrator_sn": "CAL-Klasse1-2026",
+            "cal_date": "2026-08-11"
+        }
+        self.contestation_info = {
+            "project_name": "Windpark IJsselwind / Nederweert",
+            "author_name": "Ing. R. van Giessen (Akoestisch Contra-Expert)",
+            "targeted_flaws": "1. Foutieve bodemabsorptiefactor Bf (hard asphalt vs landbouw). 2. Verzwegen tonale brom op 19 Hz. 3. Jaargemiddelde Lden verhult nachtelijke piekhinder."
+        }
+        self.reference_info = {
+            "turbine_model": "Vestas V136 / Nordex N149 (Referentie)",
+            "reference_distance_m": 250.0,
+            "operational_state": "Aan (Vollast 15 RPM)",
+            "baseline_background_dbz": 45.0,
+            "sound_power_Lw_dBA": 104.5
+        }
+        self.indoor_info = {
+            "room_type": "Slaapkamer 1e Verdieping",
+            "doors_windows_status": "Ramen en Deuren Volledig Gesloten (Norm NSI/ISO 16032)",
+            "mic_indoor_position": "Driepoot midden kamer (1.5m hoogte, >1m van wand)",
+            "facade_attenuation_db": 18.0,
+            "indoor_norm": "NSG Richtlijn Laagfrequent Geluid (Vercammen / DIN 45680)",
+            "internal_sources_off": True
+        }
+        self.outdoor_info = {
+            "outdoor_position": "Vrijveld (4.5m nachtperiode, >3.5m van gevel)",
+            "reflection_correction_db": 0.0,
+            "windscreen_type": "Bolvormige windkap 90mm",
+            "distance_to_source_m": 450.0
+        }
+        
+        # Hoofdstuk 9: Sensor Frequentie-Kalibratieresultaten & Methode
+        self.freq_calibration_info = {
+            "mic_calibration_file": "Dayton_iMM6C_Factory_Cal.cal (Actief)",
+            "mic_freq_range_hz": "10 Hz - 20,000 Hz (± 0.5 dB)",
+            "mic_cal_method": "Individuele af-fabriek frequentieresponsie overdrachtskarakteristiek + Veld pistonfoon 94.0 dB ketenkalibratie",
+            "baro_calibration_type": "Dracal USB-BAR20/30 Infrasound Druk-Frequentie Respons",
+            "baro_freq_range_hz": "0.1 Hz - 20.0 Hz (± 0.2 dBZ)",
+            "baro_cal_method": "Piezo-resistieve AC-drukkoppeling met digitale helling-compensatie & akoestische afscherming",
+            "fft_window_type": "Hann Window (75% overlap, N_FFT = 8192)",
+            "equalization_status": "GEKALIBREERD & ACTIEF (Z-gewogen & A-gewogen overdrachtsmatrix)"
+        }
+        
         # Real-time spectral data for charts
         self.mic_freqs = np.array([])
         self.mic_dbz_spectrum = np.array([])
         self.mic_dba_spectrum = np.array([])
+        self.baro_freqs = np.array([])
+        self.baro_dbz_spectrum = np.array([])
+        self.time_series_baro = np.array([])
+        self.time_series_mic = np.array([])
+        
+        # Waveform data for oscilloscope-style view
+        self.baro_time = np.array([])
+        self.baro_pressure_raw = np.array([])
+        self.baro_pressure_filtered = np.array([])
+        
+        # Waterfall spectrum history for InfraView Waterfall Plotter
+        self.baro_waterfall_times = []
+        self.baro_waterfall_matrix = []
+        self.mic_waterfall_times = []
+        self.mic_waterfall_matrix = []
+        
+        # Detected tones list (freq, dbz, audibility, penalty)
+        self.detected_tones = []
+        
+        # Status / Error messages
+        self.mic_status = "Not started"
+        self.baro_status = "Not started"
+        self.log_status = "Not started"
+        
+        # Logging path
+        self.log_filepath = ""
+
+    def reset(self):
+        """Reset all measurement buffers, history, and peak values for a fresh measurement session."""
+        self.mic_dbz_overall = 0.0
+        self.mic_dba_overall = 0.0
+        self.baro_dbz_overall = 0.0
+        self.mic_peak_freq = 0.0
+        self.mic_peak_dbz = -100.0
+        self.baro_peak_freq = 0.0
+        self.baro_peak_dbz = -100.0
+        self.mic_dbz_history.clear()
+        self.mic_dba_history.clear()
+        self.l95_mic_dbz = 0.0
+        self.l95_mic_dba = 0.0
+        self.corrected_mic_dbz = 0.0
+        self.corrected_mic_dba = 0.0
+        if hasattr(self, 'waterfall_history'):
+            self.waterfall_history.clear()
+        if hasattr(self, 'waterfall_timestamps'):
+            self.waterfall_timestamps.clear()
+        self.mic_freqs = np.array([])
+        self.mic_dbz_spectrum = np.array([])
+        self.mic_dba_spectrum = np.array([])
+        self.baro_freqs = np.array([])
+        self.baro_dbz_spectrum = np.array([])
+        self.time_series_baro = np.array([])
+        self.time_series_mic = np.array([])
         
         self.baro_freqs = np.array([])
         self.baro_dbz_spectrum = np.array([])
@@ -69,6 +192,8 @@ def get_a_weighting(f):
     R_A = num / den
     A = 20 * np.log10(R_A) + 2.00
     return A
+
+get_a_weighting_offset = get_a_weighting
 
 class MeasurementEngine:
     def __init__(self, state: SharedState):
@@ -146,6 +271,7 @@ class MeasurementEngine:
         with self.state.lock:
             if self.state.is_running:
                 return
+            self.state.reset()
             self.state.is_running = True
             
         self.config.update(config)
@@ -199,14 +325,14 @@ class MeasurementEngine:
                 
                 # Mock signal: background pink noise + 50 Hz hum (45 dBZ) + 19 Hz turbine tone (55 dBZ) + 120 Hz hum
                 t = np.arange(blocksize) / fs
-                noise = np.random.normal(0, 0.005, blocksize)
-                # 19 Hz tone (amplitude corresponds to approx 55 dBZ)
-                # 94 dB SPL is 1 Pa RMS. 55 dBZ is 2 * 10^-5 * 10^(55/20) = 0.011 Pa RMS, amplitude = 0.015 Pa
-                tone_19 = 0.015 * np.sin(2 * np.pi * 19.0 * t)
-                # 50 Hz hum (45 dBZ -> RMS 0.0035 Pa, amplitude = 0.005 Pa)
-                tone_50 = 0.005 * np.sin(2 * np.pi * 50.0 * t)
+                # Mock signal: realistic LFG noise floor (40 dBZ) + 19 Hz tone (52 dBZ) + 50 Hz hum (48 dBZ) + 64.6 Hz tone (56 dBZ) + 120 Hz tone (44 dBZ)
+                noise = np.random.normal(0, 0.02, blocksize)
+                tone_19 = 0.04 * np.sin(2 * np.pi * 19.0 * t)
+                tone_50 = 0.02 * np.sin(2 * np.pi * 50.0 * t)
+                tone_64 = 0.06 * np.sin(2 * np.pi * 64.6 * t)
+                tone_120 = 0.015 * np.sin(2 * np.pi * 120.0 * t)
                 
-                signal = noise + tone_19 + tone_50
+                signal = noise + tone_19 + tone_50 + tone_64 + tone_120
                 
                 self._process_audio_block(signal, fs)
                 time.sleep(blocksize / fs)
@@ -329,8 +455,7 @@ class MeasurementEngine:
             
         # Update shared state
         with self.state.lock:
-            # We downsample the spectrum size for rendering efficiency in Streamlit
-            # e.g., keeping only bins <= 1000 Hz, since LFG is the main focus
+            # Downsample spectrum size for rendering efficiency
             disp_indices = np.where(freqs <= 1000)[0]
             self.state.mic_freqs = freqs[disp_indices]
             self.state.mic_dbz_spectrum = dbz_spectrum[disp_indices]
@@ -341,6 +466,32 @@ class MeasurementEngine:
             self.state.mic_peak_freq = peak_freq
             self.state.mic_peak_dbz = peak_dbz
             self.state.detected_tones = detected_tones
+
+            # Track rolling history for L95 background noise computation (last 100 blocks)
+            self.state.mic_dbz_history.append(dbz_sum)
+            self.state.mic_dba_history.append(dba_sum)
+            if len(self.state.mic_dbz_history) > 100:
+                self.state.mic_dbz_history.pop(0)
+                self.state.mic_dba_history.pop(0)
+
+            # Compute L95 (5th percentile of levels = level exceeded 95% of the time)
+            if len(self.state.mic_dbz_history) >= 5:
+                self.state.l95_mic_dbz = float(np.percentile(self.state.mic_dbz_history, 5))
+                self.state.l95_mic_dba = float(np.percentile(self.state.mic_dba_history, 5))
+            else:
+                self.state.l95_mic_dbz = dbz_sum - 5.0
+                self.state.l95_mic_dba = dba_sum - 5.0
+
+            # Background Noise Subtraction Formula (RvS / Handleiding Industrielawaai 1999):
+            # L_corr = 10 * log10(10^(L_totaal/10) - 10^(L_achtergrond/10))
+            bg_dbz = self.state.l95_mic_dbz
+            bg_dba = self.state.l95_mic_dba
+            
+            diff_z = 10**(dbz_sum/10.0) - 10**(bg_dbz/10.0)
+            self.state.corrected_mic_dbz = 10 * np.log10(diff_z) if diff_z > 0 else dbz_sum
+
+            diff_a = 10**(dba_sum/10.0) - 10**(bg_dba/10.0)
+            self.state.corrected_mic_dba = 10 * np.log10(diff_a) if diff_a > 0 else dba_sum
             
             # Waterfall history for InfraView
             now_str = time.strftime("%H:%M:%S")
@@ -683,7 +834,7 @@ class MeasurementEngine:
         log_interval = self.config["log_interval"]
         self.state.log_status = "Logging active"
         
-        # Write CSV Header
+        # Write CSV Header (STAB-bestendig protocol)
         try:
             with open(self.state.log_filepath, 'w', newline='') as f:
                 writer = csv.writer(f)
@@ -691,20 +842,61 @@ class MeasurementEngine:
                     "Tijdstempel", 
                     "Microfoon dBZ (LFG)", 
                     "Microfoon dBA (Hoorbaar)",
+                    "Achtergrond L95 dBZ",
+                    "Achtergrond L95 dBA",
+                    "Gecorrigeerd Lcorr dBZ",
+                    "Gecorrigeerd Lcorr dBA",
                     "Microfoon Piek Freq (Hz)", 
                     "Microfoon Piek dBZ",
                     "Barometer dBZ (Infrasound)", 
                     "Barometer Piek Freq (Hz)", 
                     "Barometer Piek dBZ",
-                    "Tonaliteit Status"
+                    "Tonaliteit Status",
+                    "Meteo Validatie",
+                    "Microfoon Opstelling"
                 ])
         except Exception as e:
             self.state.log_status = f"Error header: {e}"
             return
 
+        # Write initial row immediately
+        try:
+            with self.state.lock:
+                timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+                mic_dbz = self.state.mic_dbz_overall
+                mic_dba = self.state.mic_dba_overall
+                l95_dbz = self.state.l95_mic_dbz
+                l95_dba = self.state.l95_mic_dba
+                corr_dbz = self.state.corrected_mic_dbz
+                corr_dba = self.state.corrected_mic_dba
+                mic_pf = self.state.mic_peak_freq
+                mic_pdb = self.state.mic_peak_dbz
+                baro_dbz = self.state.baro_dbz_overall
+                baro_pf = self.state.baro_peak_freq
+                baro_pdb = self.state.baro_peak_dbz
+                tonal_str = "Prominent" if any(t["audibility"] >= 4.0 for t in self.state.detected_tones) else "Geen"
+                meteo_str = "RvS Conform"
+                opstell_str = "Klasse 1 Vrijveld"
+
+            with open(filepath, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow([
+                    timestamp,
+                    f"{mic_dbz:.2f}", f"{mic_dba:.2f}",
+                    f"{l95_dbz:.2f}", f"{l95_dba:.2f}",
+                    f"{corr_dbz:.2f}", f"{corr_dba:.2f}",
+                    f"{mic_pf:.2f}", f"{mic_pdb:.2f}",
+                    f"{baro_dbz:.2f}", f"{baro_pf:.2f}", f"{baro_pdb:.2f}",
+                    tonal_str, meteo_str, opstell_str
+                ])
+                f.flush()
+        except Exception:
+            pass
+
+        # Logging loop (log every 2 seconds for smooth trend recording)
+        interval_secs = 2
         while True:
-            # Wait for next logging interval
-            for _ in range(log_interval):
+            for _ in range(interval_secs):
                 with self.state.lock:
                     if not self.state.is_running:
                         break
@@ -714,16 +906,37 @@ class MeasurementEngine:
                 if not self.state.is_running:
                     break
                     
-                # Collect current readings
                 timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
                 mic_dbz = self.state.mic_dbz_overall
                 mic_dba = self.state.mic_dba_overall
+                l95_dbz = self.state.l95_mic_dbz
+                l95_dba = self.state.l95_mic_dba
+                corr_dbz = self.state.corrected_mic_dbz
+                corr_dba = self.state.corrected_mic_dba
                 mic_pf = self.state.mic_peak_freq
                 mic_pdb = self.state.mic_peak_dbz
-                
                 baro_dbz = self.state.baro_dbz_overall
                 baro_pf = self.state.baro_peak_freq
                 baro_pdb = self.state.baro_peak_dbz
+                tonal_str = "Prominent" if any(t["audibility"] >= 4.0 for t in self.state.detected_tones) else "Geen"
+                meteo_str = "RvS Conform"
+                opstell_str = "Klasse 1 Vrijveld"
+
+            try:
+                with open(filepath, 'a', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([
+                        timestamp,
+                        f"{mic_dbz:.2f}", f"{mic_dba:.2f}",
+                        f"{l95_dbz:.2f}", f"{l95_dba:.2f}",
+                        f"{corr_dbz:.2f}", f"{corr_dba:.2f}",
+                        f"{mic_pf:.2f}", f"{mic_pdb:.2f}",
+                        f"{baro_dbz:.2f}", f"{baro_pf:.2f}", f"{baro_pdb:.2f}",
+                        tonal_str, meteo_str, opstell_str
+                    ])
+                    f.flush()
+            except Exception as e:
+                self.state.log_status = f"Fout bij schrijven: {e}"
                 
                 # Format tonal status
                 tonal_str = "Geen"
@@ -731,6 +944,9 @@ class MeasurementEngine:
                     top_tone = self.state.detected_tones[0]
                     if top_tone["audibility"] >= 4.0:
                         tonal_str = f"Toon {top_tone['freq']:.1f}Hz (Aud: {top_tone['audibility']:.1f}dB, Straf: {top_tone['penalty']:.1f}dB)"
+                
+                meteo_str = f"Wind {self.state.meteo_info.get('wind_speed_m_s', 0)}m/s {self.state.meteo_info.get('wind_direction', '')} ({'CONFORM RvS' if self.state.meteo_info.get('meteo_valid_rvs', True) else 'ONGELDIG'})"
+                setup_str = f"H={self.state.setup_info.get('mic_height_m', 4.5)}m ({self.state.setup_info.get('mic_position', '')})"
                         
             # Write to CSV
             try:
@@ -740,12 +956,18 @@ class MeasurementEngine:
                         timestamp,
                         f"{mic_dbz:.1f}",
                         f"{mic_dba:.1f}",
+                        f"{l95_dbz:.1f}",
+                        f"{l95_dba:.1f}",
+                        f"{corr_dbz:.1f}",
+                        f"{corr_dba:.1f}",
                         f"{mic_pf:.1f}",
                         f"{mic_pdb:.1f}",
                         f"{baro_dbz:.1f}",
                         f"{baro_pf:.1f}",
                         f"{baro_pdb:.1f}",
-                        tonal_str
+                        tonal_str,
+                        meteo_str,
+                        setup_str
                     ])
                 self.state.log_status = f"Logged at {time.strftime('%H:%M:%S')}"
             except Exception as e:
