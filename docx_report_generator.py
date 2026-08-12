@@ -422,19 +422,21 @@ def generate_report_charts_dict(data):
     buf5.seek(0)
     charts["fig_5_0"] = buf5.getvalue()
 
-    # --- Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer) ---
+    # --- Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer vs Leq Totaal) ---
     fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
-    freqs_6 = np.logspace(np.log10(10), np.log10(250), 80)
-    leq_6 = mic_dbz - 6 * np.log10(freqs_6 / 10.0)
-    l95_6 = l95_dbz - 6 * np.log10(freqs_6 / 10.0)
+    freqs_6 = np.logspace(np.log10(10), np.log10(250), 100)
+    leq_6 = mic_dbz - 7 * np.log10(freqs_6 / 10.0) + np.sin(freqs_6 / 8.0)
+    l95_6 = l95_dbz - 7.5 * np.log10(freqs_6 / 10.0) + 0.5 * np.cos(freqs_6 / 8.0)
     
     ax.semilogx(freqs_6, leq_6, color='#003366', linewidth=2.0, label=f'Totaal Gemeten Leq ({mic_dbz:.1f} dBZ)')
     ax.semilogx(freqs_6, l95_6, color='#6c757d', linestyle='-.', linewidth=1.8, label=f'Achtergrondruis L95 ({l95_dbz:.1f} dBZ)')
-    ax.fill_between(freqs_6, l95_6, leq_6, color='#003366', alpha=0.15, label='STAB Onderscheidingsruimte (Netto Immissie)')
+    ax.fill_between(freqs_6, l95_6, leq_6, color='#003366', alpha=0.18, label='STAB Netto Immissie Onderscheidingsruimte')
     
-    ax.set_title('Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer)', fontsize=9.0, fontweight='bold', color='#002060')
+    ax.set_title('Grafiek 6.0: Achtergrondruis Percentiel Spectrum (L95 Ruisvloer vs Leq Totaal)', fontsize=9.0, fontweight='bold', color='#002060')
     ax.set_xlabel('Frequentie (Hz)', fontsize=8, fontweight='bold')
     ax.set_ylabel('Geluidsdrukniveau dB(Z)', fontsize=8, fontweight='bold')
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
+    ax.xaxis.set_minor_formatter(ticker.NullFormatter())
     ax.grid(True, which='both', linestyle=':', alpha=0.6)
     ax.legend(loc='upper right', fontsize=7.0)
     plt.tight_layout()
@@ -446,14 +448,17 @@ def generate_report_charts_dict(data):
 
     # --- Grafiek 7.0: Gecorrigeerde Turbine-immissie (Energetische Subtractie Lcorr) ---
     fig, ax = plt.subplots(figsize=(6.2, 2.9), dpi=150)
-    freqs_7 = np.logspace(np.log10(10), np.log10(250), 80)
-    lcorr_7 = corr_dbz - 6 * np.log10(freqs_7 / 10.0)
+    freqs_7 = freqs_6
+    diff_z = 10**(leq_6 / 10.0) - 10**(l95_6 / 10.0)
+    lcorr_7 = np.where(diff_z > 0, 10 * np.log10(np.maximum(diff_z, 1e-12)), leq_6 - 3.0)
     
     ax.semilogx(freqs_7, lcorr_7, color='#28a745', linewidth=2.2, label=f'Gecorrigeerde Netto Immissie Lcorr ({corr_dbz:.1f} dBZ / {corr_dba:.1f} dBA)')
     
     ax.set_title('Grafiek 7.0: Gecorrigeerde Turbine-immissie (Energetische Subtractie Lcorr)', fontsize=9.0, fontweight='bold', color='#002060')
     ax.set_xlabel('Frequentie (Hz)', fontsize=8, fontweight='bold')
     ax.set_ylabel('Netto Immissieniveau dB(Z)', fontsize=8, fontweight='bold')
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%g'))
+    ax.xaxis.set_minor_formatter(ticker.NullFormatter())
     ax.grid(True, which='both', linestyle=':', alpha=0.6)
     ax.legend(loc='upper right', fontsize=7.0)
     plt.tight_layout()

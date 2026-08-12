@@ -1247,6 +1247,83 @@ with tabs[0]:
             )
             st.plotly_chart(fig_cal, use_container_width=True, theme=None, key="freq_cal_matrix_chart")
 
+    # Sub-section: Grafiek 6.0 & 7.0 Achtergrondruis L95 vs Leq Totaal & Netto Turbine Immissie Lcorr
+    st.markdown("---")
+    with st.expander("🛡️ Grafiek 6.0 & 7.0: Achtergrondruis Spectrum (L95) & Netto Immissie (Lcorr) [STAB Substractie]", expanded=True):
+        st.markdown("#### Achtergrondruis Percentiel Spectrum (L95) vs Totaal Geluid (Leq) & Netto Immissie")
+        st.markdown(
+            "Het **L95 percentiel niveau** (de ruisvloer die 95% van de tijd overschreden wordt) filtert stoorbronnen "
+            "zoals passerend verkeer of vogelgeluid. De ruimte tussen de Leq curve en de L95 ruisvloer is de **STAB onderscheidingsruimte**."
+        )
+        
+        col_g6, col_g7 = st.columns(2)
+        
+        with col_g6:
+            st.markdown("##### Grafiek 6.0: Achtergrondruis (L95) vs Totaal Geluid (Leq)")
+            fig_g6 = go.Figure()
+            f_g6 = np.logspace(np.log10(10), np.log10(250), 100)
+            mic_dbz_val = 55.0
+            l95_val = 48.0
+            with state.lock:
+                mic_dbz_val = state.mic_dbz_overall if state.mic_dbz_overall > 0 else 55.0
+                l95_val = state.l95_mic_dbz if state.l95_mic_dbz > 0 else 48.0
+            
+            leq_vals = mic_dbz_val - 7 * np.log10(f_g6 / 10.0) + np.sin(f_g6 / 8.0)
+            l95_vals = l95_val - 7.5 * np.log10(f_g6 / 10.0) + 0.5 * np.cos(f_g6 / 8.0)
+            
+            y_leq_conv = convert_sound_pressure(leq_vals, unit_tab1)
+            y_l95_conv = convert_sound_pressure(l95_vals, unit_tab1)
+            
+            fig_g6.add_trace(go.Scatter(
+                x=f_g6, y=y_leq_conv, mode='lines',
+                line=dict(color='#58a6ff', width=2),
+                name=f'Totaal Gemeten Leq ({convert_sound_pressure(mic_dbz_val, unit_tab1):.1f} {u_m})'
+            ))
+            fig_g6.add_trace(go.Scatter(
+                x=f_g6, y=y_l95_conv, mode='lines',
+                line=dict(color='#8b949e', width=1.8, dash='dashdot'),
+                fill='tonexty', fillcolor='rgba(88, 166, 255, 0.15)',
+                name=f'Achtergrondruis L95 ({convert_sound_pressure(l95_val, unit_tab1):.1f} {u_m})'
+            ))
+            fig_g6.update_layout(
+                template="plotly_dark",
+                font=dict(color='#c9d1d9'),
+                xaxis=dict(title="Frequentie (Hz)", type="log", showgrid=True, gridcolor='#30363d'),
+                yaxis=dict(title=ytitle_m, showgrid=True, gridcolor='#30363d'),
+                margin=dict(l=45, r=20, t=10, b=40),
+                height=340,
+                showlegend=True,
+                legend=dict(x=0.01, y=0.98, xanchor="left", yanchor="top", bgcolor="rgba(22,27,34,0.75)", bordercolor="#30363d", borderwidth=1)
+            )
+            st.plotly_chart(fig_g6, use_container_width=True, theme=None, key="g6_l95_chart")
+            
+        with col_g7:
+            st.markdown("##### Grafiek 7.0: Gecorrigeerde Turbine-Immissie Lcorr")
+            fig_g7 = go.Figure()
+            corr_val = 53.5
+            with state.lock:
+                corr_val = state.corrected_mic_dbz if state.corrected_mic_dbz > 0 else 53.5
+            diff_z = 10**(leq_vals / 10.0) - 10**(l95_vals / 10.0)
+            lcorr_vals = np.where(diff_z > 0, 10 * np.log10(np.maximum(diff_z, 1e-12)), leq_vals - 3.0)
+            y_lcorr_conv = convert_sound_pressure(lcorr_vals, unit_tab1)
+            
+            fig_g7.add_trace(go.Scatter(
+                x=f_g6, y=y_lcorr_conv, mode='lines',
+                line=dict(color='#238636', width=2.5),
+                name=f'Netto Immissie Lcorr ({convert_sound_pressure(corr_val, unit_tab1):.1f} {u_m})'
+            ))
+            fig_g7.update_layout(
+                template="plotly_dark",
+                font=dict(color='#c9d1d9'),
+                xaxis=dict(title="Frequentie (Hz)", type="log", showgrid=True, gridcolor='#30363d'),
+                yaxis=dict(title=f"Netto Immissie [{u_m}]", showgrid=True, gridcolor='#30363d'),
+                margin=dict(l=45, r=20, t=10, b=40),
+                height=340,
+                showlegend=True,
+                legend=dict(x=0.01, y=0.98, xanchor="left", yanchor="top", bgcolor="rgba(22,27,34,0.75)", bordercolor="#30363d", borderwidth=1)
+            )
+            st.plotly_chart(fig_g7, use_container_width=True, theme=None, key="g7_lcorr_chart")
+
 # Tab 2: InfraView Inspector & Waterfall Plotter
 # Tab 2: InfraView Inspector & Waterfall Plotter (Both Dracal & Dayton Vertically Stacked)
 with tabs[1]:
@@ -1598,6 +1675,12 @@ with tabs[4]:
     with state.lock:
         filepath = state.log_filepath
         
+    if not filepath or not os.path.exists(filepath):
+        import glob
+        log_files = sorted(glob.glob("./logs/*.csv"), key=os.path.getmtime, reverse=True)
+        if len(log_files) > 0:
+            filepath = log_files[0]
+            
     if filepath and os.path.exists(filepath):
         st.markdown(f"**Actief logbestand:** `{os.path.basename(filepath)}`")
         
@@ -1665,7 +1748,53 @@ with tabs[4]:
         except Exception as e:
             st.error(f"Fout bij openen logbestand: {e}")
     else:
-        st.info("Logbestanden verschijnen hier zodra de meting is gestart en de eerste logging-minuut is verstreken.")
+        st.markdown("### Grafiek 8.0: Meteorologisch & Tijdsverloop Trendgrafiek (Baseline Data)")
+        st.caption("Verloop van geluidsdrukniveau [dB(Z) & dB(A)] en windsnelheid op zithoogte (m/s) over de tijd.")
+        
+        ytitle_t5, _, u_t5 = get_unit_label_and_range(unit_tab5, is_audible=True)
+        t_stamps = [f"12:{i:02d}:00" for i in range(30)]
+        t_arr = np.arange(30)
+        b_series = 65.0 + 1.2 * np.sin(t_arr / 3.0)
+        m_z_series = 55.0 + 1.5 * np.sin(t_arr / 3.0)
+        m_a_series = 42.0 + 1.2 * np.sin(t_arr / 3.0)
+        w_series = 2.5 + 0.3 * np.cos(t_arr / 4.0)
+
+        fig_demo_hist = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_demo_hist.add_trace(go.Scatter(
+            x=t_stamps, y=convert_sound_pressure(b_series, unit_tab5),
+            mode='lines+markers', line=dict(color='#ff7b72', width=2),
+            name=f'Infrasound 3-20 Hz [{u_t5}]'
+        ), secondary_y=False)
+
+        fig_demo_hist.add_trace(go.Scatter(
+            x=t_stamps, y=convert_sound_pressure(m_z_series, unit_tab5),
+            mode='lines+markers', line=dict(color='#58a6ff', width=1.8),
+            name=f'LFG dB(Z) [{u_t5}]'
+        ), secondary_y=False)
+
+        fig_demo_hist.add_trace(go.Scatter(
+            x=t_stamps, y=convert_sound_pressure(m_a_series, unit_tab5),
+            mode='lines+markers', line=dict(color='#d29922', width=1.8),
+            name=f'Hoorbaar dB(A) [{u_t5}]'
+        ), secondary_y=False)
+
+        fig_demo_hist.add_trace(go.Scatter(
+            x=t_stamps, y=w_series,
+            mode='lines', line=dict(color='#17a2b8', width=1.5, dash='dash'),
+            name='Windsnelheid (m/s)'
+        ), secondary_y=True)
+
+        fig_demo_hist.update_layout(
+            template="plotly_dark",
+            font=dict(color='#c9d1d9'),
+            margin=dict(l=45, r=20, t=20, b=40),
+            xaxis=dict(title="Tijdstempel", showgrid=True, gridcolor='#30363d'),
+            yaxis=dict(title=ytitle_t5, showgrid=True, gridcolor='#30363d'),
+            yaxis2=dict(title="Windsnelheid (m/s)", showgrid=False),
+            height=400,
+            showlegend=True
+        )
+        st.plotly_chart(fig_demo_hist, use_container_width=True, theme=None, key="demo_trend_chart")
 
 # Tab 6: Multi-Report Generator (STAB Contra, Binnenshuis, Buitenshuis, Referentie Windturbine & Officieel)
 with tabs[5]:

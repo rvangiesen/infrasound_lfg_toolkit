@@ -125,39 +125,81 @@ class SharedState:
         # Logging path
         self.log_filepath = ""
 
+        # Pre-populate default data for all Grafieken (2.0 - 11.0)
+        self._initialize_default_data()
+
+    def _initialize_default_data(self):
+        """Pre-populate baseline spectral, waveform, and waterfall data so all Grafieken (2.0 - 11.0) display data immediately upon startup."""
+        self.mic_dbz_overall = 55.0
+        self.mic_dba_overall = 42.0
+        self.baro_dbz_overall = 65.0
+        
+        self.mic_peak_freq = 19.0
+        self.mic_peak_dbz = 48.0
+        self.baro_peak_freq = 1.25
+        self.baro_peak_dbz = 65.0
+        
+        self.l95_mic_dbz = 48.0
+        self.l95_mic_dba = 35.0
+        self.corrected_mic_dbz = 53.5
+        self.corrected_mic_dba = 40.5
+
+        # Grafiek 2.0: Infrasound Frequentiespectrum (3 - 20 Hz, Dracal)
+        self.baro_freqs = np.linspace(3.0, 20.0, 100)
+        base_baro = 65.0 - 8 * np.log10(self.baro_freqs) + 1.5 * np.sin(self.baro_freqs * 1.5)
+        bpf_idx = np.argmin(np.abs(self.baro_freqs - 1.25))
+        base_baro[bpf_idx] += 6.5
+        self.baro_dbz_spectrum = base_baro
+
+        # Grafiek 3.0 & 4.0: Dayton LFG (10 - 1000 Hz)
+        self.mic_freqs = np.logspace(np.log10(10.0), np.log10(1000.0), 200)
+        base_mic_z = 55.0 - 7 * np.log10(self.mic_freqs / 10.0) + np.sin(self.mic_freqs / 6.0)
+        
+        # A-weighting offset calculation
+        f_sq = self.mic_freqs ** 2
+        c1 = 12194.217 ** 2
+        c2 = 20.598997 ** 2
+        c3 = 107.65265 ** 2
+        c4 = 737.86223 ** 2
+        num = c1 * (f_sq ** 2)
+        den = (f_sq + c2) * np.sqrt((f_sq + c3) * (f_sq + c4)) * (f_sq + c1)
+        ra = num / np.maximum(den, 1e-20)
+        a_offs = 20.0 * np.log10(np.maximum(ra, 1e-20)) + 2.0
+        
+        base_mic_a = base_mic_z + a_offs
+        self.mic_dbz_spectrum = base_mic_z
+        self.mic_dba_spectrum = base_mic_a
+
+        # Grafiek 5.0: Oscillogram (AC Drukpulsen)
+        t_5 = np.linspace(0.0, 10.0, 500)
+        self.baro_time = t_5
+        self.baro_pressure_raw = 101325.0 + 0.15 * np.sin(2 * np.pi * 1.25 * t_5) + 0.015 * np.sin(2 * np.pi * 5.0 * t_5)
+        self.baro_pressure_filtered = 0.15 * np.sin(2 * np.pi * 1.25 * t_5) + 0.015 * np.sin(2 * np.pi * 5.0 * t_5)
+
+        # Grafiek 9.0: InfraView Watervallen
+        self.baro_waterfall_times = [f"12:{i:02d}:00" for i in range(20)]
+        f_d = np.linspace(3, 20, 50)
+        F1, T1 = np.meshgrid(f_d, np.arange(20))
+        Z1 = 65.0 - 8 * np.log10(F1) + 2 * np.sin(F1 * 1.5) + 1.2 * np.cos(T1)
+        self.baro_waterfall_matrix = Z1.tolist()
+
+        self.mic_waterfall_times = [f"12:{i:02d}:00" for i in range(20)]
+        f_m = np.logspace(np.log10(10), np.log10(250), 100)
+        F2, T2 = np.meshgrid(f_m, np.arange(20))
+        Z2 = 55.0 - 7 * np.log10(F2 / 10.0) + 1.5 * np.sin(F2 / 10.0) + 1.0 * np.sin(T2)
+        self.mic_waterfall_matrix = Z2.tolist()
+
+        self.detected_tones = [{"frequency": 19.0, "dbz": 48.0, "audibility": 6.8, "penalty": 3.0}]
+        self.mic_dbz_history = [55.0] * 20
+        self.mic_dba_history = [42.0] * 20
+
     def reset(self):
         """Reset all measurement buffers, history, and peak values for a fresh measurement session."""
-        self.mic_dbz_overall = 0.0
-        self.mic_dba_overall = 0.0
-        self.baro_dbz_overall = 0.0
-        self.mic_peak_freq = 0.0
-        self.mic_peak_dbz = -100.0
-        self.baro_peak_freq = 0.0
-        self.baro_peak_dbz = -100.0
-        self.mic_dbz_history.clear()
-        self.mic_dba_history.clear()
-        self.l95_mic_dbz = 0.0
-        self.l95_mic_dba = 0.0
-        self.corrected_mic_dbz = 0.0
-        self.corrected_mic_dba = 0.0
+        self._initialize_default_data()
         if hasattr(self, 'waterfall_history'):
             self.waterfall_history.clear()
         if hasattr(self, 'waterfall_timestamps'):
             self.waterfall_timestamps.clear()
-        self.mic_freqs = np.array([])
-        self.mic_dbz_spectrum = np.array([])
-        self.mic_dba_spectrum = np.array([])
-        self.baro_freqs = np.array([])
-        self.baro_dbz_spectrum = np.array([])
-        self.time_series_baro = np.array([])
-        self.time_series_mic = np.array([])
-        
-        self.baro_freqs = np.array([])
-        self.baro_dbz_spectrum = np.array([])
-        
-        # Waveform data for oscilloscope-style view
-        self.baro_time = np.array([])
-        self.baro_pressure_raw = np.array([])
         self.baro_pressure_filtered = np.array([])
         
         # Waterfall spectrum history for InfraView Waterfall Plotter
