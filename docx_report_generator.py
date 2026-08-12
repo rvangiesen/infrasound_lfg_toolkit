@@ -28,7 +28,7 @@ import re
 def strip_html_tags(text):
     if not isinstance(text, str):
         return text
-    text = text.replace("&Delta;", "Δ").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+    text = text.replace("&Delta;", "Δ").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("&plusmn;", "±").replace("&quot;", '"').replace("<sub>", "").replace("</sub>", "").replace("<b>", "").replace("</b>", "")
     text = re.sub(r'<br\s*/?>', '\n', text)
     text = re.sub(r'<[^>]+>', '', text)
     return text.strip()
@@ -908,11 +908,11 @@ def build_stab_report_docx(data, charts=None):
     
     add_section_heading(doc, "4. Smalbandige FFT Tonaliteitsanalyse (IEC 61400-11 / ISO 1996-2)")
     p4 = doc.add_paragraph()
-    r4 = p4.add_run(data.get("tonal_summary_text") or "Smalbandige FFT-analyse toont tonale piekcomponenten aan op de bladpassagefrequentie.")
+    r4 = p4.add_run(strip_html_tags(data.get("tonal_summary_text")) or "Smalbandige FFT-analyse toont tonale piekcomponenten aan op de bladpassagefrequentie.")
     r4.font.size = Pt(10)
     
     add_section_heading(doc, "5. Concrete Betwisting & Foutanalyse van het Overheidsrapport")
-    flaws_text = data.get("rep_flaws_formatted") or "1. Gebruik van jaargemiddelde Lden-waarden.\n2. Negeren van infrasound drukgolven (3-20 Hz)."
+    flaws_text = strip_html_tags(data.get("rep_flaws_formatted")) or "1. Gebruik van jaargemiddelde Lden-waarden.\n2. Negeren van infrasound drukgolven (3-20 Hz)."
     add_callout_box(doc, "Vastgestelde gebreken in het rapport van de overheid / exploitant:", flaws_text)
     
     add_section_9_calibration(doc, data.get("fc_info", {}), c_info)
@@ -1014,7 +1014,7 @@ def build_indoor_report_docx(data, charts=None):
     r4 = p4.add_run(
         "Middels smalbandige FFT analyse (resolutie 0.1 Hz) is getoetst op de aanwezigheid van tonale componenten. "
         "Tonale piekbelastingen veroorzaken hinderversterking binnenshuis. "
-        f"{data.get('tonal_summary_text', '')}"
+        f"{strip_html_tags(data.get('tonal_summary_text', ''))}"
     )
     r4.font.size = Pt(10)
     
@@ -1219,7 +1219,7 @@ def build_official_report_docx(data, charts=None):
     
     add_section_heading(doc, "2. Smalbandige FFT Tonaliteitsanalyse (ISO 1996-2 / IEC 61400-11)")
     p2 = doc.add_paragraph()
-    r2 = p2.add_run(data.get("tonal_summary_text") or "Smalbandige FFT-analyse toont tonale piekcomponenten aan.")
+    r2 = p2.add_run(strip_html_tags(data.get("tonal_summary_text")) or "Smalbandige FFT-analyse toont tonale piekcomponenten aan.")
     r2.font.size = Pt(10)
     
     add_section_heading(doc, "3. Meteorologische Omstandigheden & Ketenkalibratie")

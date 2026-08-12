@@ -2047,8 +2047,10 @@ with tabs[5]:
     csv_basename = os.path.basename(csv_file) if csv_file else 'meting.csv'
 
     tonal_summary_html = "Geen prominente tonale componenten gedetecteerd (&Delta;L<sub>ta</sub> &lt; 4 dB)."
+    tonal_summary_text = "Geen prominente tonale componenten gedetecteerd (ΔLta < 4 dB)."
     if len(tones) > 0 and tones[0]["audibility"] >= 4.0:
         tonal_summary_html = f"<b style='color:#d9534f;'>PROMINENTE TOON GEDETECTEERD:</b> Frequentie {tones[0]['freq']:.1f} Hz met hoorbaarheid &Delta;L<sub>ta</sub> = {tones[0]['audibility']:.1f} dB. Hierop is conform ISO 1996-2 / IEC 61400-11 een wettelijke toeslag van <b>+{tones[0]['penalty']:.1f} dB</b> van toepassing."
+        tonal_summary_text = f"PROMINENTE TOON GEDETECTEERD: Frequentie {tones[0]['freq']:.1f} Hz met hoorbaarheid ΔLta = {tones[0]['audibility']:.1f} dB. Hierop is conform ISO 1996-2 / IEC 61400-11 een wettelijke toeslag van +{tones[0]['penalty']:.1f} dB van toepassing."
 
     # Generate SVGs for Grafieken 2 t/m 8.0
     tone_freq = tones[0]["freq"] if len(tones) > 0 else 19.5
@@ -2715,8 +2717,8 @@ with tabs[5]:
             "sound_power_Lw_dBA": r_info.get("sound_power_Lw_dBA", 104.5),
             "baseline_background_dbz": r_info.get("baseline_background_dbz", 45.0)
         },
-        "rep_flaws_formatted": rep_flaws_formatted,
-        "tonal_summary_text": tonal_summary_html.replace("<br>", "\n").replace("<b>", "").replace("</b>", ""),
+        "rep_flaws_formatted": rep_flaws,
+        "tonal_summary_text": tonal_summary_text,
         "rep_turb_model": rep_turb_model,
         "rep_ref_dist": rep_ref_dist,
         "rep_op_state": rep_op_state
